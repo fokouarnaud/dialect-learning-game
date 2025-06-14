@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.75rem;
+    
+    /* Custom variables for fonts */
+    --font-display: 'Poppins', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Monaco', monospace;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-body);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer components {
+  /* Custom game components */
+  .game-layout {
+    min-height: 100vh;
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)));
+  }
+  
+  .glass-container {
+    backdrop-filter: blur(16px);
+    background-color: hsl(var(--card) / 0.1);
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  .glass-card {
+    backdrop-filter: blur(8px);
+    background-color: hsl(var(--card) / 0.05);
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.6));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .animate-safe {
+    animation: none;
+  }
+  
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-safe {
+      animation: inherit;
+    }
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, hsl(var(--muted)), transparent);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Responsive optimizations */
+@media (max-width: 640px) {
+  .mobile-optimized {
+    font-size: 0.875rem;
+    padding: 0.75rem 0.75rem;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .glass-container,
+  .glass-card {
+    background-color: hsl(var(--background));
+    border-color: hsl(var(--foreground));
+    backdrop-filter: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+}
