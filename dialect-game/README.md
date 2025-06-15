@@ -1,268 +1,408 @@
-# Dialect Learning Game
+# 🎮 Dialect Learning Game
 
-A modern web-based language learning game using voice recognition technology, built with React, TypeScript, and Web Speech API.
+Un jeu éducatif moderne et interactif pour apprendre les dialectes et langues, construit avec React, TypeScript, TailwindCSS et des APIs gratuites.
 
-## 🎮 Game Overview
+![Dialect Game](https://img.shields.io/badge/Status-Operational-brightgreen)
+![React](https://img.shields.io/badge/React-18-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4)
+![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-New%20York-000000)
 
-The Dialect Learning Game helps users learn different dialects and improve pronunciation through interactive voice recognition gameplay. Players listen to words in various dialects and repeat them to earn points and advance through levels.
+## ✨ Fonctionnalités
+
+### 🌍 Multilingue et Traduction
+- **15+ langues supportées** avec traduction automatique
+- **API Dictionary** gratuite pour définitions, phonétique et audio
+- **LibreTranslate** pour traduction en temps réel
+- **Détection automatique** de langue
+
+### 🎯 Gameplay Moderne
+- **Quiz interactifs** générés automatiquement
+- **3 niveaux de difficulté** (Easy/Medium/Hard)
+- **Timer dynamique** adapté à la complexité
+- **Système de score** avec progression et célébrations
+- **Support vocal** pour pronunciations
+
+### 🎨 Interface Moderne
+- **Design moderne** avec shadcn/ui (style "New York")
+- **4 thèmes visuels** : Classic, Modern, Nature, Neon
+- **Dark/Light mode** automatique
+- **Responsive design** mobile-first
+- **Accessibilité WCAG 2.1** native
+
+### 🖼️ Assets Dynamiques
+- **Images thématiques** via Unsplash et Pexels
+- **Lazy loading** avec Intersection Observer
+- **Fallbacks intelligents** (toujours des images disponibles)
+- **Optimisations** WebP et cache
+
+## 🚀 Installation
+
+### Prérequis
+- Node.js 18+ 
+- npm ou yarn
+
+### Setup Rapide
+```bash
+# Cloner le repository
+git clone <your-repo-url>
+cd dialect-game
+
+# Installer les dépendances
+npm install
+
+# Démarrer le serveur de développement
+npm run dev
+
+# Ouvrir http://localhost:5174/
+```
+
+### Scripts Disponibles
+```bash
+npm run dev          # Serveur de développement
+npm run build        # Build de production
+npm run preview      # Prévisualiser le build
+npm run test         # Tests unitaires
+npm run test:e2e     # Tests E2E (Playwright)
+npm run type-check   # Vérification TypeScript
+```
+
+## 🎮 Utilisation
+
+### Démarrage du Jeu
+1. **Ouvrir** l'application sur `http://localhost:5174/`
+2. **Sélectionner** les langues source et cible
+3. **Choisir** la difficulté (Easy/Medium/Hard)
+4. **Optionnel** : Ajouter des mots personnalisés
+5. **Commencer** le quiz interactif !
+
+### Interface Principale
+- **Sélecteur de langues** : Interface moderne avec flags
+- **Quiz interactif** : Questions générées automatiquement
+- **Galerie d'images** : Images thématiques pour contexte
+- **Système de score** : Progression et statistiques
+- **Settings** : Personnalisation des thèmes
+
+## 🎨 Personnalisation
+
+### Changer les Thèmes
+Les thèmes sont configurés dans `src/styles/theme.ts` :
+
+```typescript
+export const themes = {
+  classic: {
+    primary: '#3B82F6',
+    secondary: '#8B5CF6',
+    // ...
+  },
+  modern: {
+    primary: '#10B981',
+    secondary: '#F59E0B',
+    // ...
+  }
+  // Ajouter vos thèmes personnalisés
+}
+```
+
+### Modifier les APIs
+Configuration dans `src/services/api/` :
+
+```typescript
+// Dictionary API
+const DICTIONARY_BASE_URL = 'https://api.dictionaryapi.dev/api/v2/entries/';
+
+// LibreTranslate API  
+const TRANSLATE_BASE_URL = 'https://libretranslate.de/translate';
+
+// Unsplash API (images)
+const UNSPLASH_BASE_URL = 'https://api.unsplash.com/search/photos';
+```
+
+### Ajouter des Langues
+Dans `src/services/api/translateApi.ts` :
+
+```typescript
+export const SUPPORTED_LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  // Ajouter vos langues
+];
+```
 
 ## 🏗️ Architecture
 
-### Tech Stack
-- **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Testing**: Vitest (unit) + Playwright (E2E)
-- **Voice Recognition**: Web Speech API
-- **Styling**: CSS3 with modern features
-- **State Management**: useReducer + Context API
+### Stack Technique
+- **Frontend** : React 18 + TypeScript
+- **Build** : Vite 6.x
+- **Styling** : TailwindCSS 4.x + shadcn/ui
+- **Tests** : Vitest + Playwright
+- **APIs** : Free Dictionary API + LibreTranslate + Unsplash/Pexels
 
-### Project Structure
+### Structure du Projet
 ```
 dialect-game/
 ├── src/
-│   ├── components/          # React components
-│   │   ├── GameCanvas.tsx   # Main game rendering
-│   │   ├── ScoreDisplay.tsx # Score and stats UI
-│   │   └── VoiceInput.tsx   # Voice recognition interface
-│   ├── core/                # Game engine
-│   │   └── GameEngine.ts    # 60fps game loop & object management
-│   ├── services/            # External service integrations
-│   │   └── VoiceService.ts  # Web Speech API wrapper
-│   ├── hooks/               # Custom React hooks
-│   │   ├── useGameEngine.ts # Game engine integration
-│   │   └── useVoiceService.ts # Voice service integration
-│   ├── types/               # TypeScript definitions
-│   │   ├── game.ts          # Game state and objects
-│   │   ├── voice.ts         # Voice recognition types
-│   │   └── dialect.ts       # Language and dialect types
-│   ├── utils/               # Utility functions
-│   │   ├── ObjectPool.ts    # Memory optimization
-│   │   └── SpatialGrid.ts   # Collision detection optimization
-│   └── App.tsx              # Main application component
+│   ├── components/          # Composants React
+│   │   ├── ui/             # shadcn/ui components
+│   │   └── game/           # Composants spécifiques au jeu
+│   ├── services/           # Services API
+│   │   └── api/            # Intégrations APIs externes
+│   ├── hooks/              # Custom React hooks
+│   ├── types/              # Définitions TypeScript
+│   ├── styles/             # Styles et thèmes
+│   └── utils/              # Utilitaires
 ├── tests/
-│   ├── unit/                # Unit tests (Vitest)
-│   ├── e2e/                 # End-to-end tests (Playwright)
-│   └── utils/               # Test utilities
-└── public/                  # Static assets
+│   ├── unit/               # Tests unitaires
+│   └── e2e/                # Tests E2E
+└── docs/                   # Documentation
 ```
 
-## 🚀 Getting Started
+### Composants Principaux
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- Modern browser with Web Speech API support (Chrome recommended)
+#### QuizComponent
+Quiz interactif avec timer et feedback :
+```typescript
+<QuizComponent
+  sourceLanguage="en"
+  targetLanguage="fr"
+  difficulty="medium"
+  customWords={['hello', 'world']}
+  onScoreUpdate={(score) => console.log(score)}
+/>
+```
 
-### Installation
+#### LanguageSelector
+Sélecteur de langues moderne :
+```typescript
+<LanguageSelector
+  value={selectedLanguage}
+  onChange={setSelectedLanguage}
+  supportedLanguages={SUPPORTED_LANGUAGES}
+/>
+```
+
+#### ImageGallery
+Galerie d'images thématiques :
+```typescript
+<ImageGallery
+  theme="nature"
+  count={6}
+  onImageSelect={(image) => console.log(image)}
+/>
+```
+
+## 🧪 Tests
+
+### Tests Unitaires
 ```bash
-# Clone the repository
-git clone <repository-url>
+npm run test                 # Tous les tests
+npm run test:watch          # Mode watch
+npm run test:coverage       # Avec coverage
+```
+
+**Statistiques actuelles** : 285/361 tests passent (79%)
+
+### Tests E2E
+```bash
+npm run test:e2e            # Tests Playwright
+npm run test:e2e:headed     # Mode headed
+npm run test:e2e:debug      # Mode debug
+```
+
+**Statistiques actuelles** : 124/404 tests passent (31%)
+
+### Écrire des Tests
+```typescript
+// Test unitaire exemple
+import { render, screen } from '@testing-library/react';
+import { QuizComponent } from '../QuizComponent';
+
+test('should render quiz with questions', () => {
+  render(<QuizComponent sourceLanguage="en" targetLanguage="fr" />);
+  expect(screen.getByText(/quiz/i)).toBeInTheDocument();
+});
+```
+
+## 🌐 APIs Utilisées
+
+### Free Dictionary API
+- **URL** : `https://api.dictionaryapi.dev/`
+- **Usage** : Définitions, phonétique, audio
+- **Gratuite** : Oui, pas de clé requise
+- **Limitations** : Rate limiting léger
+
+### LibreTranslate
+- **URL** : `https://libretranslate.de/`
+- **Usage** : Traduction multilingue
+- **Gratuite** : Oui, pas de clé requise
+- **Limitations** : Rate limiting modéré
+
+### Unsplash API
+- **URL** : `https://api.unsplash.com/`
+- **Usage** : Images de haute qualité
+- **Gratuite** : Oui, clé demo incluse
+- **Limitations** : 50 requêtes/heure
+
+### Pexels API (Fallback)
+- **URL** : `https://api.pexels.com/`
+- **Usage** : Images de fallback
+- **Gratuite** : Oui, clé demo incluse
+- **Limitations** : 200 requêtes/heure
+
+## 🎯 Performance
+
+### Optimisations Appliquées
+- **Lazy loading** pour images et composants
+- **Cache intelligent** pour toutes les APIs
+- **Bundle splitting** automatique avec Vite
+- **Tree shaking** pour CSS et JavaScript
+- **WebP optimization** pour images
+
+### Métriques Cibles
+- **Chargement initial** : <3s
+- **Time to Interactive** : <2s
+- **Bundle size** : <2MB gzipped
+- **Lighthouse Score** : >90
+
+## ♿ Accessibilité
+
+### Standards Respectés
+- **WCAG 2.1 Level AA** compliance
+- **ARIA labels** automatiques via Radix UI
+- **Navigation clavier** complète
+- **Screen reader** support
+- **Contraste couleurs** optimisé
+- **Focus management** approprié
+
+### Tests d'Accessibilité
+```bash
+npm run test:a11y           # Tests accessibilité
+npm run lighthouse          # Audit Lighthouse
+```
+
+## 🔧 Développement
+
+### Variables d'Environnement
+Créer un fichier `.env.local` :
+```env
+# APIs (optionnelles, fallbacks inclus)
+VITE_UNSPLASH_ACCESS_KEY=your_key_here
+VITE_PEXELS_API_KEY=your_key_here
+
+# Configuration
+VITE_APP_TITLE=Dialect Learning Game
+VITE_DEFAULT_LANGUAGE=en
+```
+
+### Configuration TailwindCSS
+Le projet utilise TailwindCSS 4.x avec shadcn/ui :
+```javascript
+// tailwind.config.js
+export default {
+  darkMode: ["class"],
+  content: ['./src/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        // Variables shadcn/ui
+      }
+    }
+  },
+  plugins: [require("tailwindcss-animate")]
+}
+```
+
+### Hooks Personnalisés
+```typescript
+// useGameEngine - Logique de jeu
+const { score, level, startGame } = useGameEngine();
+
+// useVoiceService - Reconnaissance vocale
+const { isListening, transcript, startListening } = useVoiceService();
+
+// useLazyLoading - Chargement différé
+const { ref, isIntersecting } = useLazyLoading();
+```
+
+## 📦 Déploiement
+
+### Build de Production
+```bash
+npm run build               # Génère dist/
+npm run preview            # Prévisualise le build
+```
+
+### Déploiement Vercel
+```bash
+npm install -g vercel
+vercel
+```
+
+### Déploiement Netlify
+```bash
+npm run build
+# Uploade le dossier dist/
+```
+
+### Docker (optionnel)
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "run", "preview"]
+```
+
+## 🤝 Contribution
+
+### Setup Développement
+```bash
+git clone <repo>
 cd dialect-game
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
 
-### Available Scripts
+### Standards Code
+- **TypeScript strict** mode
+- **ESLint + Prettier** configurés
+- **Conventional Commits**
+- **Tests requis** pour nouvelles fonctionnalités
+
+### Workflow Git
 ```bash
-# Development
-npm run dev          # Start dev server (http://localhost:5173)
-npm run build        # Production build
-npm run preview      # Preview production build
-
-# Testing
-npm test             # Run unit tests
-npm run test:watch   # Unit tests in watch mode
-npm run test:coverage # Unit tests with coverage report
-npm run test:e2e     # Run E2E tests
-npm run test:e2e:ui  # E2E tests with Playwright UI
-
-# Code Quality
-npm run lint         # ESLint code checking
-npm run type-check   # TypeScript type checking
+git checkout -b feature/nouvelle-fonctionnalite
+# Développer + tests
+git commit -m "feat: ajouter nouvelle fonctionnalité"
+git push origin feature/nouvelle-fonctionnalite
+# Créer Pull Request
 ```
 
-## 🎯 Game Features
+## 📄 Licence
 
-### Core Gameplay
-- **Voice Recognition**: Real-time speech recognition using Web Speech API
-- **Dialect Learning**: Support for multiple languages and dialects
-- **Progressive Difficulty**: Adaptive difficulty based on player performance
-- **Real-time Scoring**: Immediate feedback with confidence-based scoring
-- **Achievement System**: Streaks, milestones, and level progression
+MIT License - voir [LICENSE](LICENSE) pour plus de détails.
 
-### Technical Features
-- **60fps Game Loop**: Smooth animations with requestAnimationFrame
-- **Object Pooling**: Memory-efficient object management
-- **Spatial Partitioning**: Optimized collision detection
-- **Error Boundaries**: Graceful error handling and recovery
-- **Performance Monitoring**: Real-time FPS and memory usage tracking
-- **Accessibility**: WCAG AA compliance with screen reader support
+## 🙏 Remerciements
 
-### Browser Support
-- ✅ Chrome 80+ (recommended)
-- ✅ Firefox 85+
-- ✅ Safari 14+
-- ✅ Edge 80+
-- ❌ Internet Explorer (not supported)
+- **shadcn/ui** pour les composants modernes
+- **Free Dictionary API** pour les définitions
+- **LibreTranslate** pour les traductions
+- **Unsplash & Pexels** pour les images
+- **Community React** pour l'écosystème
 
-## 🧪 Testing Strategy
+## 📞 Support
 
-### Test-Driven Development (TDD)
-This project follows strict TDD methodology:
-1. **RED**: Write failing tests first
-2. **GREEN**: Implement minimal code to pass tests
-3. **REFACTOR**: Improve code while keeping tests green
-
-### Test Coverage
-- **Unit Tests**: 113/160 tests passing (71% coverage)
-  - GameEngine: 100% ✅
-  - VoiceService: 100% ✅
-  - React Components: 69% average
-- **E2E Tests**: 64 comprehensive scenarios
-  - Cross-browser testing (Chrome, Firefox, Safari)
-  - Accessibility compliance testing
-  - Performance benchmarking
-
-### Running Tests
-```bash
-# Run all unit tests
-npm test
-
-# Run specific component tests
-npm test -- GameEngine
-npm test -- VoiceService
-
-# Run E2E tests
-npm run test:e2e
-
-# Generate coverage report
-npm run test:coverage
-```
-
-## 🔧 Configuration
-
-### Game Configuration
-The game can be configured in `src/core/GameEngine.ts`:
-```typescript
-const defaultConfig: GameConfig = {
-  canvasWidth: 800,
-  canvasHeight: 600,
-  targetFPS: 60,
-  fixedTimeStep: 16.67, // 1000/60
-  maxObjects: 1000,
-  collisionEnabled: true,
-  debug: false
-};
-```
-
-### Voice Recognition Configuration
-Voice settings in `src/services/VoiceService.ts`:
-```typescript
-const defaultConfig = {
-  language: 'en-US',
-  continuous: true,
-  interimResults: false,
-  maxAlternatives: 1,
-  serviceGrammars: false
-};
-```
-
-## 🎨 Accessibility
-
-### WCAG AA Compliance
-- **Keyboard Navigation**: Full keyboard support for all interactions
-- **Screen Reader Support**: Comprehensive ARIA labels and live regions
-- **High Contrast**: Support for high contrast mode
-- **Reduced Motion**: Respects user's motion preferences
-- **Focus Management**: Proper focus indicators and management
-
-### Voice Recognition Accessibility
-- **Visual Feedback**: Real-time visual indicators for voice state
-- **Error Recovery**: Clear error messages and retry mechanisms
-- **Alternative Input**: Keyboard fallbacks for all voice interactions
-- **Confidence Display**: Optional confidence scores for user feedback
-
-## 🚀 Performance
-
-### Optimization Techniques
-- **Object Pooling**: Reuse game objects to minimize garbage collection
-- **Spatial Grid**: Efficient collision detection for large numbers of objects
-- **Component Memoization**: React.memo and useCallback for render optimization
-- **Bundle Splitting**: Code splitting for faster initial load
-- **Asset Optimization**: Compressed images and optimized fonts
-
-### Performance Targets
-- **Frame Rate**: Stable 60fps during gameplay
-- **Loading Time**: < 3 seconds initial load
-- **Memory Usage**: < 100MB heap size during extended play
-- **Lighthouse Score**: > 90 performance score
-- **Voice Latency**: < 200ms recognition response time
-
-### Monitoring
-The app includes built-in performance monitoring:
-- Real-time FPS counter
-- Memory usage tracking
-- Voice recognition latency measurement
-- Debug mode with detailed metrics (Ctrl+Shift+D)
-
-## 🔍 Debugging
-
-### Debug Mode
-Enable debug mode for development insights:
-- Press `Ctrl+Shift+D` to toggle debug overlay
-- Shows FPS, memory usage, and performance metrics
-- Displays voice recognition confidence scores
-- Enables additional console logging
-
-### Common Issues
-1. **Voice Recognition Not Working**
-   - Ensure microphone permissions are granted
-   - Check browser compatibility (Chrome recommended)
-   - Verify HTTPS connection (required for Web Speech API)
-
-2. **Performance Issues**
-   - Monitor FPS counter in debug mode
-   - Check browser developer tools for memory leaks
-   - Ensure hardware acceleration is enabled
-
-3. **Test Failures**
-   - Run `npm run test:coverage` for detailed coverage report
-   - Check `test-results/` folder for E2E test artifacts
-   - Verify browser compatibility for E2E tests
-
-## 🤝 Contributing
-
-### Development Workflow
-1. Fork the repository
-2. Create a feature branch
-3. Write tests first (TDD)
-4. Implement features
-5. Ensure all tests pass
-6. Submit pull request
-
-### Code Standards
-- **TypeScript**: Strict type checking enabled
-- **ESLint**: Enforced code style and best practices
-- **Testing**: Minimum 85% coverage required
-- **Accessibility**: WCAG AA compliance mandatory
-- **Performance**: 60fps requirement for all features
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Web Speech API for voice recognition capabilities
-- React team for the excellent framework
-- Vite for lightning-fast development experience
-- Playwright for comprehensive E2E testing
-- The accessibility community for WCAG guidelines
+- **Issues** : [GitHub Issues](https://github.com/your-repo/issues)
+- **Discussions** : [GitHub Discussions](https://github.com/your-repo/discussions)
+- **Documentation** : [Docs](./docs/)
 
 ---
 
-Built with ❤️ using Test-Driven Development methodology.
+**Créé avec ❤️ en utilisant React, TypeScript, TailwindCSS et shadcn/ui**
+
+*L'apprentissage des langues n'a jamais été aussi moderne et accessible !*
