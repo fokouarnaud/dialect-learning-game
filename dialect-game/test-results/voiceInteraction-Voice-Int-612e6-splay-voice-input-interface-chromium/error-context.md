@@ -1,11 +1,30 @@
 # Page snapshot
 
 ```yaml
-- text: "[plugin:vite:css] [postcss] It looks like you're trying to use `tailwindcss` directly as a PostCSS plugin. The PostCSS plugin has moved to a separate package, so to continue using Tailwind CSS with PostCSS you'll need to install `@tailwindcss/postcss` and update your PostCSS configuration. at We (c:\\Users\\cedric\\Desktop\\box\\01-Projects\\Web\\game\\dialect-game\\node_modules\\tailwindcss\\dist\\lib.js:35:2121) at LazyResult.runOnRoot (c:\\Users\\cedric\\Desktop\\box\\01-Projects\\Web\\game\\dialect-game\\node_modules\\postcss\\lib\\lazy-result.js:361:16) at LazyResult.runAsync (c:\\Users\\cedric\\Desktop\\box\\01-Projects\\Web\\game\\dialect-game\\node_modules\\postcss\\lib\\lazy-result.js:290:26) at LazyResult.async (c:\\Users\\cedric\\Desktop\\box\\01-Projects\\Web\\game\\dialect-game\\node_modules\\postcss\\lib\\lazy-result.js:192:30) at LazyResult.then (c:\\Users\\cedric\\Desktop\\box\\01-Projects\\Web\\game\\dialect-game\\node_modules\\postcss\\lib\\lazy-result.js:436:17 Click outside, press Esc key, or fix the code to dismiss. You can also disable this overlay by setting"
-- code: server.hmr.overlay
-- text: to
-- code: "false"
-- text: in
-- code: vite.config.ts
-- text: .
+- banner:
+  - heading "Dialect Learning Game" [level=1]
+  - combobox "Sélectionner un thème":
+    - option "Modern" [selected]
+    - option "Gaming"
+    - option "Academic"
+    - option "Playful"
+  - button "Activer le mode sombre":
+    - img
+  - text: "FPS: 28Memory: 10MB"
+- region "Game statistics":
+  - text: Score 0 Best 0 Level 1
+  - progressbar
+  - text: Accuracy 0.0% Streak 0
+  - status
+  - alert
+- button "Menu"
+- button "End Game"
+- img "Game canvas"
+- text: Game is currently playing
+- status: Game started
+- button "Start voice recognition": 🎤
+- status: Say the word you hear...
+- status: Voice recognition stopped
+- status: "Game state: playing"
+- status: "Current score: 0"
 ```
