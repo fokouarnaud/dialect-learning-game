@@ -5,65 +5,76 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.75rem;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
     
     /* Custom variables for fonts */
     --font-display: 'Poppins', system-ui, sans-serif;
     --font-body: 'Inter', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', 'Monaco', monospace;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
   
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-family: var(--font-body), system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
@@ -77,29 +88,59 @@
   
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    @apply font-semibold tracking-tight;
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 
   h1 {
-    @apply text-4xl lg:text-5xl;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    h1 {
+      font-size: 3rem;
+      line-height: 1;
+    }
   }
 
   h2 {
-    @apply text-3xl lg:text-4xl;
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  @media (min-width: 1024px) {
+    h2 {
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+    }
   }
 
   h3 {
-    @apply text-2xl lg:text-3xl;
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    h3 {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+    }
   }
 
   a {
-    @apply text-primary hover:text-primary/80 transition-colors;
+    color: hsl(var(--primary));
     font-weight: 500;
     text-decoration: inherit;
+    transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  a:hover {
+    color: hsl(var(--primary) / 0.8);
   }
 
   button {
-    @apply transition-all duration-200;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* App root container */
@@ -112,24 +153,27 @@
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    @apply w-2;
+    width: 0.5rem;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-muted;
+    background-color: hsl(var(--muted));
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full;
+    background-color: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50;
+    background-color: hsl(var(--muted-foreground) / 0.5);
   }
 
   /* Enhanced focus styles */
   .focus-ring:focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
   }
 }
 
@@ -158,33 +202,106 @@
 
   /* Enhanced gaming components */
   .enhanced-card-hover {
-    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .enhanced-card-hover:hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: translateY(-0.25rem);
   }
 
   .enhanced-card-interactive {
-    @apply cursor-pointer transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg;
+    cursor: pointer;
+    transform: scale(1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .enhanced-card-interactive:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
   }
 
   .enhanced-button-ripple {
-    @apply relative overflow-hidden;
+    position: relative;
+    overflow: hidden;
   }
 
   .enhanced-button-ripple::before {
     content: '';
-    @apply absolute inset-0 bg-white/20 rounded-inherit opacity-0 scale-0 transition-all duration-300;
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: inherit;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .enhanced-button-ripple:active::before {
-    @apply opacity-100 scale-100;
+    opacity: 1;
+    transform: scale(1);
   }
 
   /* Glass effect variations */
   .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .dark .glass {
-    @apply bg-black/10 border-white/10;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Gaming UI Components */
+  .gaming-button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .gaming-button:hover {
+    transform: translateY(-0.125rem);
+  }
+
+  .gaming-button:active {
+    transform: translateY(0);
+  }
+
+  .gaming-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .gaming-card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .gaming-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .gaming-progress {
+    width: 100%;
+    background-color: hsl(var(--muted));
+    border-radius: 9999px;
+    height: 0.5rem;
+    overflow: hidden;
+  }
+
+  .gaming-progress-bar {
+    height: 100%;
+    background-color: hsl(var(--primary));
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Logo styling */
@@ -210,7 +327,15 @@
 
   /* Toasts */
   [data-toast-viewport] {
-    @apply fixed top-0 right-0 z-50 max-w-[100vw] m-0 p-4 list-none outline-none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 50;
+    max-width: 100vw;
+    margin: 0;
+    padding: 1rem;
+    list-style: none;
+    outline: none;
   }
 }
 
@@ -231,6 +356,17 @@
       animation: inherit;
     }
   }
+
+  /* Gaming utilities */
+  .thumb-friendly {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .touch-optimized {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 /* Custom animations */
@@ -242,74 +378,6 @@
 @keyframes shimmer {
   0% { background-position: -1000px 0; }
   100% { background-position: 1000px 0; }
-}
-
-.float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.shimmer {
-  background: linear-gradient(90deg, transparent, hsl(var(--muted)), transparent);
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite;
-}
-
-/* Responsive optimizations */
-@media (max-width: 640px) {
-  .mobile-optimized {
-    font-size: 0.875rem;
-    padding: 0.75rem 0.75rem;
-  }
-}
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-  .glass-container,
-  .glass-card {
-    background-color: hsl(var(--background));
-    border-color: hsl(var(--foreground));
-    backdrop-filter: none;
-  }
-}
-
-/* Landing Page Animations & Effects */
-@layer components {
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
-  }
-  
-  .glass-container {
-    @apply bg-background/80 backdrop-blur-sm border border-border/50;
-  }
-  
-  .floating-animation {
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  .fade-in-up {
-    animation: fadeInUp 0.8s ease-out forwards;
-  }
-  
-  .hover-lift {
-    @apply transition-all duration-300 ease-out;
-  }
-  
-  .hover-lift:hover {
-    @apply -translate-y-2 shadow-lg;
-  }
-  
-  .pulse-glow {
-    animation: pulseGlow 2s ease-in-out infinite alternate;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
 }
 
 @keyframes fadeInUp {
@@ -329,6 +397,55 @@
   }
   to {
     box-shadow: 0 0 30px rgba(var(--primary), 0.8);
+  }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, hsl(var(--muted)), transparent);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite alternate;
+}
+
+/* Responsive optimizations */
+@media (max-width: 640px) {
+  .mobile-optimized {
+    font-size: 0.875rem;
+    padding: 0.75rem 0.75rem;
+  }
+
+  #root {
+    padding: 1rem;
+  }
+}
+
+/* Gaming mobile breakpoints */
+@media (max-width: 320px) {
+  .xs-hidden { display: none; }
+}
+
+@media (min-width: 320px) and (max-width: 479px) {
+  .gaming-layout { padding: 0.5rem; }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .glass-container,
+  .glass-card {
+    background-color: hsl(var(--background));
+    border-color: hsl(var(--foreground));
+    backdrop-filter: none;
   }
 }
 

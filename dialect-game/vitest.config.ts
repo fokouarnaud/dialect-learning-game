@@ -1,7 +1,9 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+
+import path from "path"
+
+import react from "@vitejs/plugin-react-swc"
+import { defineConfig } from "vite"
 
 export default defineConfig({
   plugins: [react()],
@@ -25,7 +27,7 @@ export default defineConfig({
       'tests/e2e/**'
     ],
     coverage: {
-      provider: 'c8',
+      provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
