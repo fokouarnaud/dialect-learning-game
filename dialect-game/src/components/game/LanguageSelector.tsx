@@ -19,8 +19,13 @@ export interface LanguageSelectorProps {
   mode?: 'horizontal' | 'vertical';
 }
 
+// Type étendu avec la propriété flag
+interface ExtendedLanguageInfo extends LanguageInfo {
+  flag: string;
+}
+
 interface SelectorState {
-  languages: LanguageInfo[];
+  languages: ExtendedLanguageInfo[];
   isLoading: boolean;
   error: string | null;
   sourceLanguage: string;
@@ -48,11 +53,10 @@ export const LanguageSelector = React.forwardRef<HTMLDivElement, LanguageSelecto
   selectedTarget = 'es',
   className,
   title = 'Select Languages',
-  mode = 'vertical',
-  ...props
+  mode = 'horizontal'
 }, ref) => {
   const [state, setState] = useState<SelectorState>({
-    languages: [],
+    languages: POPULAR_LANGUAGES as ExtendedLanguageInfo[],
     isLoading: true,
     error: null,
     sourceLanguage: selectedSource,
@@ -78,7 +82,7 @@ export const LanguageSelector = React.forwardRef<HTMLDivElement, LanguageSelecto
       const supportedLanguages = await translateApi.getSupportedLanguages();
       
       // Merge with popular languages to add flags and ensure they're available
-      const enhancedLanguages = supportedLanguages.map(lang => {
+      const enhancedLanguages: ExtendedLanguageInfo[] = supportedLanguages.map(lang => {
         const popular = POPULAR_LANGUAGES.find(p => p.code === lang.code);
         return {
           ...lang,
@@ -104,7 +108,7 @@ export const LanguageSelector = React.forwardRef<HTMLDivElement, LanguageSelecto
       console.error('Failed to load languages:', error);
       setState(prev => ({
         ...prev,
-        languages: POPULAR_LANGUAGES,
+        languages: POPULAR_LANGUAGES as ExtendedLanguageInfo[],
         isLoading: false,
         error: 'Using default languages due to API error'
       }));
@@ -152,9 +156,9 @@ export const LanguageSelector = React.forwardRef<HTMLDivElement, LanguageSelecto
     onLanguageSelect(newSource, newTarget);
   };
 
-  const getLanguageByCode = (code: string) => {
+  const getLanguageByCode = (code: string): ExtendedLanguageInfo => {
     return state.languages.find(lang => lang.code === code) || 
-           POPULAR_LANGUAGES.find(lang => lang.code === code) ||
+           POPULAR_LANGUAGES.find(lang => lang.code === code) as ExtendedLanguageInfo ||
            { code, name: code.toUpperCase(), flag: '🌐' };
   };
 
@@ -178,10 +182,12 @@ export const LanguageSelector = React.forwardRef<HTMLDivElement, LanguageSelecto
             )}
             disabled={state.isLoading}
           >
-            <span className="mr-2 text-lg">{(language as any).flag || '🌐'}</span>
-            <div className="min-w-0 flex-1">
-              <div className="text-xs font-medium truncate">{language.name}</div>
-              <div className="text-xs text-muted-foreground">{language.code}</div>
+            <div className="flex items-center gap-2 w-full">
+              <span className="text-lg flex-shrink-0">{language.flag}</span>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-sm truncate">{language.name}</div>
+                <div className="text-xs text-muted-foreground uppercase">{language.code}</div>
+              </div>
             </div>
           </Button>
         ))}
@@ -191,30 +197,34 @@ export const LanguageSelector = React.forwardRef<HTMLDivElement, LanguageSelecto
 
   if (state.isLoading) {
     return (
-      <Card className={cn("w-full", className)} ref={ref} {...props}>
-        <CardContent className="pt-6">
-          <div className="text-center space-y-4">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-sm text-muted-foreground">Loading languages...</p>
+      <Card ref={ref} className={cn("w-full", className)}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span>{title}</span>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center py-8">
+            <p className="text-muted-foreground">Loading supported languages...</p>
           </div>
         </CardContent>
       </Card>
     );
   }
 
+  const isHorizontal = mode === 'horizontal';
+
   return (
-    <Card className={cn("w-full", className)} ref={ref} {...props}>
+    <Card ref={ref} className={cn("w-full", className)}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>{title}</span>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline">{state.languages.length} languages</Badge>
-            {state.error && (
-              <Badge variant="destructive" className="text-xs">
-                Offline mode
-              </Badge>
-            )}
-          </div>
+          {state.error && (
+            <Badge variant="secondary" className="text-xs">
+              Offline Mode
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
 
@@ -258,67 +268,34 @@ export const LanguageSelector = React.forwardRef<HTMLDivElement, LanguageSelecto
           </div>
         </div>
 
-        {mode === 'vertical' ? (
-          <div className="space-y-6">
-            {renderLanguageGrid(
-              state.sourceLanguage,
-              handleSourceLanguageSelect,
-              "From (Source Language)"
-            )}
-            {renderLanguageGrid(
-              state.targetLanguage,
-              handleTargetLanguageSelect,
-              "To (Target Language)"
-            )}
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-6">
-            {renderLanguageGrid(
-              state.sourceLanguage,
-              handleSourceLanguageSelect,
-              "From (Source Language)"
-            )}
-            {renderLanguageGrid(
-              state.targetLanguage,
-              handleTargetLanguageSelect,
-              "To (Target Language)"
-            )}
+        {/* Language Selection Grids */}
+        <div className={cn(
+          "grid gap-6",
+          isHorizontal ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"
+        )}>
+          {renderLanguageGrid(
+            state.sourceLanguage,
+            handleSourceLanguageSelect,
+            "Source Language"
+          )}
+          
+          {renderLanguageGrid(
+            state.targetLanguage,
+            handleTargetLanguageSelect,
+            "Target Language"
+          )}
+        </div>
+
+        {/* Status Messages */}
+        {state.error && (
+          <div className="text-center text-sm text-muted-foreground">
+            <p>{state.error}</p>
           </div>
         )}
 
-        {/* Quick Actions */}
-        <div className="flex flex-wrap gap-2 pt-4 border-t">
-          <Badge variant="outline" className="text-xs">
-            Popular combinations:
-          </Badge>
-          {[
-            { from: 'en', to: 'es', label: 'EN → ES' },
-            { from: 'en', to: 'fr', label: 'EN → FR' },
-            { from: 'es', to: 'en', label: 'ES → EN' },
-            { from: 'fr', to: 'en', label: 'FR → EN' },
-          ].map((combo) => (
-            <Button
-              key={`${combo.from}-${combo.to}`}
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setState(prev => ({
-                  ...prev,
-                  sourceLanguage: combo.from,
-                  targetLanguage: combo.to
-                }));
-                onLanguageSelect(combo.from, combo.to);
-              }}
-              className="h-6 text-xs"
-            >
-              {combo.label}
-            </Button>
-          ))}
-        </div>
-
-        {state.error && (
-          <div className="text-xs text-muted-foreground text-center p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
-            {state.error}
+        {!state.error && (
+          <div className="text-center text-xs text-muted-foreground">
+            {state.languages.length} languages available
           </div>
         )}
       </CardContent>
@@ -327,3 +304,5 @@ export const LanguageSelector = React.forwardRef<HTMLDivElement, LanguageSelecto
 });
 
 LanguageSelector.displayName = 'LanguageSelector';
+
+export default LanguageSelector;
