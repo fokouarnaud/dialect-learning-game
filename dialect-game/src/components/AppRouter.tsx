@@ -18,6 +18,7 @@ const LandingPageGaming = lazy(() => import('./LandingPageGaming'));
 const LessonsPage = lazy(() => import('./LessonsPage'));
 const LessonsPageGaming = lazy(() => import('./LessonsPageGaming'));
 const LessonsPageAdvanced = lazy(() => import('./LessonsPageAdvanced'));
+const LessonsPageClean = lazy(() => import('./LessonsPageClean'));
 const LessonPage = lazy(() => import('./LessonPage'));
 const ProgressPage = lazy(() => import('./ProgressPage'));
 const GameDashboard = lazy(() => import('./game/GameDashboard').then(module => ({ default: module.GameDashboard })));
@@ -140,6 +141,14 @@ const LandingPageWrapper: React.FC = () => {
 };
 
 const LessonsPageWrapper: React.FC = () => (
+  <Layout showNavigation={false}>
+    <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
+      <LessonsPageClean />
+    </Suspense>
+  </Layout>
+);
+
+const LessonsPageAdvancedWrapper: React.FC = () => (
   <Layout showNavigation={false}>
     <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
       <LessonsPageAdvanced />
@@ -287,6 +296,7 @@ export function AppRouter() {
         <Route path="/enhanced" element={<LandingPageEnhancedWrapper />} />
         <Route path="/lessons-enhanced" element={<LessonsPageEnhancedWrapper />} />
         <Route path="/lessons-gaming" element={<LessonsPageGamingWrapper />} />
+        <Route path="/lessons-advanced" element={<LessonsPageAdvancedWrapper />} />
         
         {/* Legacy Game routes */}
         <Route path="/game" element={<GamePageWrapper />} />
