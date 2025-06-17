@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:enhanced": "vite --mode enhanced",
     "build": "tsc -b && vite build",
-    "build:prod": "NODE_ENV=production npm run build",
+    "build:prod": "set NODE_ENV=production && npm run build",
     "build:enhanced": "vite build --mode enhanced",
     "build:force": "vite build",
     "build:analyze": "ANALYZE=true npm run build:force",
@@ -25,8 +25,10 @@
     "type-check": "tsc --noEmit",
     "analyze": "npm run build:analyze",
     "size-check": "npm run build:force && du -sh dist/",
-    "clean": "rm -rf dist node_modules/.vite",
-    "demo:enhanced": "echo '🎨 Démarrage de la démonstration Task 9...' && npm run dev:enhanced"
+    "clean": "if exist dist rmdir /s /q dist && if exist node_modules\\.vite rmdir /s /q node_modules\\.vite",
+    "demo:enhanced": "echo '🎨 Démarrage de la démonstration Task 9...' && npm run dev:enhanced",
+    "deploy:validate": "node deploy-final.cjs",
+    "deploy:prepare": "npm run build && npm run deploy:validate"
   },
   "dependencies": {
     "@radix-ui/react-progress": "^1.1.7",

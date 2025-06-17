@@ -64,6 +64,12 @@ Object.defineProperty(window, 'sessionStorage', {
   value: localStorageMock,
 });
 
+// Mock Google Analytics gtag
+Object.defineProperty(window, 'gtag', {
+  value: vi.fn(),
+  writable: true,
+});
+
 // Mock URL.createObjectURL
 global.URL.createObjectURL = vi.fn(() => 'mocked-object-url');
 global.URL.revokeObjectURL = vi.fn();

@@ -36,6 +36,55 @@ export interface ThemeConfig {
 
 // Thèmes disponibles
 export const themes: Record<string, ThemeConfig> = {
+  // Thèmes de base requis par les tests
+  light: {
+    name: 'Light',
+    colors: {
+      primary: 'blue',
+      secondary: 'slate',
+      accent: 'sky',
+      neutral: 'gray',
+      success: 'green',
+      warning: 'yellow',
+      error: 'red',
+    },
+    fonts: {
+      display: 'Inter',
+      body: 'Inter',
+      mono: 'JetBrains Mono',
+    },
+    effects: {
+      glassmorphism: false,
+      animations: true,
+      shadows: 'soft',
+      borderRadius: 'lg',
+    },
+  },
+  
+  dark: {
+    name: 'Dark',
+    colors: {
+      primary: 'blue',
+      secondary: 'slate',
+      accent: 'sky',
+      neutral: 'gray',
+      success: 'green',
+      warning: 'yellow',
+      error: 'red',
+    },
+    fonts: {
+      display: 'Inter',
+      body: 'Inter',
+      mono: 'JetBrains Mono',
+    },
+    effects: {
+      glassmorphism: false,
+      animations: true,
+      shadows: 'soft',
+      borderRadius: 'lg',
+    },
+  },
+
   // Thème par défaut - Moderne et professionnel
   modern: {
     name: 'Modern',

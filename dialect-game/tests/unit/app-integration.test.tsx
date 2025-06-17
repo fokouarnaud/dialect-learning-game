@@ -10,15 +10,15 @@ import App from '../../src/components/App'
 
 // Mock des modules
 vi.mock('../../src/components/UserProgression', () => ({
-  default: () => <div data-testid="user-progression-container">User Progression Mock</div>
+  default: () => <div data-testid="user-progression-mock">User Progression Mock</div>
 }))
 
 vi.mock('../../src/components/MultiplayerLobby', () => ({
-  default: () => <div data-testid="multiplayer-lobby-container">Multiplayer Lobby Mock</div>
+  default: () => <div data-testid="multiplayer-lobby-mock">Multiplayer Lobby Mock</div>
 }))
 
 vi.mock('../../src/components/GameVoiceIntegration', () => ({
-  default: () => <div data-testid="game-voice-container">Game Voice Mock</div>
+  default: () => <div data-testid="game-voice-mock">Game Voice Mock</div>
 }))
 
 describe('App Integration Tests (TDD CYCLE 6 RED Phase)', () => {
@@ -62,6 +62,7 @@ describe('App Integration Tests (TDD CYCLE 6 RED Phase)', () => {
       
       // Contenu par défaut (Game)
       expect(screen.getByTestId('game-voice-container')).toBeInTheDocument()
+      expect(screen.getByTestId('game-voice-mock')).toBeInTheDocument()
     })
 
     it('should implement complete responsive design navigation', () => {
@@ -75,12 +76,15 @@ describe('App Integration Tests (TDD CYCLE 6 RED Phase)', () => {
       // Test navigation onglets
       fireEvent.click(progressionTab)
       expect(screen.getByTestId('user-progression-container')).toBeInTheDocument()
+      expect(screen.getByTestId('user-progression-mock')).toBeInTheDocument()
       
       fireEvent.click(multiplayerTab)
       expect(screen.getByTestId('multiplayer-lobby-container')).toBeInTheDocument()
+      expect(screen.getByTestId('multiplayer-lobby-mock')).toBeInTheDocument()
       
       fireEvent.click(gameTab)
       expect(screen.getByTestId('game-voice-container')).toBeInTheDocument()
+      expect(screen.getByTestId('game-voice-mock')).toBeInTheDocument()
     })
 
     it('should have working PWA installation flow', () => {
@@ -262,7 +266,7 @@ describe('App Integration Tests (TDD CYCLE 6 RED Phase)', () => {
     })
 
     it('should persist theme preference', () => {
-      const mockGetItem = vi.fn().mockReturnValue('dark')
+      const mockGetItem = vi.fn().mockReturnValue(null) // Pas de thème sauvegardé
       const mockSetItem = vi.fn()
       
       Object.defineProperty(window, 'localStorage', {
@@ -277,7 +281,7 @@ describe('App Integration Tests (TDD CYCLE 6 RED Phase)', () => {
       
       render(<App />)
       
-      // Toggle theme
+      // Toggle theme (de light vers dark)
       const themeToggle = screen.getByTestId('dark-mode-toggle')
       fireEvent.click(themeToggle)
       

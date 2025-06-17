@@ -63,7 +63,7 @@ export class CacheManager {
     }
     
     const entry: CacheEntry<T> = {
-      value: compressed ? finalValue : value,
+      value: compressed ? finalValue as unknown as T : value,
       timestamp,
       ttl: options.ttl,
       hits: 0,

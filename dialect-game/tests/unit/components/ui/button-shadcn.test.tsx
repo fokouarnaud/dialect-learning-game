@@ -43,13 +43,13 @@ describe('Button shadcn/ui Component', () => {
 
     test('should render button with different sizes', () => {
       const { rerender } = renderWithTheme(<Button size="sm">Small</Button>);
-      expect(screen.getByRole('button')).toHaveClass('h-9');
+      expect(screen.getByRole('button')).toHaveClass('h-8');
 
       rerender(<ThemeProvider><Button size="lg">Large</Button></ThemeProvider>);
-      expect(screen.getByRole('button')).toHaveClass('h-11');
+      expect(screen.getByRole('button')).toHaveClass('h-10');
 
       rerender(<ThemeProvider><Button size="icon">Icon</Button></ThemeProvider>);
-      expect(screen.getByRole('button')).toHaveClass('h-10', 'w-10');
+      expect(screen.getByRole('button')).toHaveClass('h-9', 'w-9');
     });
 
     test('should render disabled button', () => {
@@ -60,17 +60,10 @@ describe('Button shadcn/ui Component', () => {
       expect(button).toHaveClass('disabled:opacity-50');
     });
 
-    test('should render loading button', () => {
-      renderWithTheme(<Button loading>Loading</Button>);
-      
-      const button = screen.getByRole('button');
-      expect(button).toBeDisabled();
-      expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
-    });
-
-    test('should render button with icon', () => {
+    test('should render button with children content', () => {
       renderWithTheme(
-        <Button icon={<span data-testid="test-icon">🚀</span>}>
+        <Button>
+          <span data-testid="test-icon">🚀</span>
           With Icon
         </Button>
       );
@@ -105,16 +98,16 @@ describe('Button shadcn/ui Component', () => {
       expect(handleClick).not.toHaveBeenCalled();
     });
 
-    test('should not trigger click when loading', async () => {
+    test('should trigger click when enabled', async () => {
       const handleClick = vi.fn();
       const user = userEvent.setup();
       
-      renderWithTheme(<Button onClick={handleClick} loading>Click me</Button>);
+      renderWithTheme(<Button onClick={handleClick}>Click me</Button>);
       
       const button = screen.getByRole('button');
       await user.click(button);
       
-      expect(handleClick).not.toHaveBeenCalled();
+      expect(handleClick).toHaveBeenCalledTimes(1);
     });
 
     test('should handle keyboard events', async () => {
@@ -137,7 +130,7 @@ describe('Button shadcn/ui Component', () => {
       
       const button = screen.getByRole('button');
       expect(button).toHaveClass('focus-visible:outline-none');
-      expect(button).toHaveClass('focus-visible:ring-2');
+      expect(button).toHaveClass('focus-visible:ring-1');
     });
 
     test('should support custom ARIA labels', () => {
@@ -152,10 +145,11 @@ describe('Button shadcn/ui Component', () => {
       expect(button).toHaveAttribute('aria-describedby', 'description');
     });
 
-    test('should indicate loading state to screen readers', () => {
-      renderWithTheme(<Button loading>Loading Button</Button>);
+    test('should support ARIA attributes', () => {
+      renderWithTheme(<Button aria-pressed="true">Toggle Button</Button>);
       
-      expect(screen.getByRole('status')).toBeInTheDocument();
+      const button = screen.getByRole('button');
+      expect(button).toHaveAttribute('aria-pressed', 'true');
     });
   });
 

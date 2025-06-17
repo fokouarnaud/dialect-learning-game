@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { LandingPage } from './LandingPage';
-import { App as GameApp } from '../App';
+import App from './App';
 
 type Route = 'landing' | 'game';
 
@@ -56,7 +56,7 @@ export function Router() {
             ← Back to Home
           </button>
         </nav>
-        <GameApp />
+        <App />
       </div>
     );
   }
