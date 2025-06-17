@@ -47,7 +47,6 @@ export enum ContentType {
 export enum ExerciseType {
   MULTIPLE_CHOICE = 'multiple_choice',
   FILL_IN_BLANKS = 'fill_in_blanks',
-  FILL_BLANKS = 'fill_in_blanks', // Alias pour compatibilité
   MATCHING = 'matching',
   ORDERING = 'ordering',
   PRONUNCIATION_PRACTICE = 'pronunciation_practice',

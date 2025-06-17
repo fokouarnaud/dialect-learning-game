@@ -397,22 +397,23 @@ export class ApiMonitoring {
 
   private evaluateAlertRule(rule: AlertRule, endpoint: string): boolean {
     const metrics = this.getEndpointMetrics(endpoint, rule.duration);
-    
-    switch (rule.condition) {
-      case 'error_rate':
+      switch (rule.condition) {
+      case 'error_rate': {
         const errorRate = metrics.totalRequests > 0 
           ? metrics.failedRequests / metrics.totalRequests 
           : 0;
         return errorRate > rule.threshold;
+      }
         
       case 'response_time':
         return metrics.averageLatency > rule.threshold;
         
-      case 'availability':
+      case 'availability': {
         const availability = metrics.totalRequests > 0 
           ? metrics.successRequests / metrics.totalRequests 
           : 1;
         return availability < rule.threshold;
+      }
         
       default:
         return false;

@@ -144,11 +144,7 @@ export default defineConfig(({ command, mode }) => {
     // Optimisations CSS
     css: {
       devSourcemap: true,
-      postcss: {
-        plugins: [
-          // PostCSS plugins seront chargés depuis postcss.config.js
-        ],
-      },
+      postcss: './postcss.config.js',
     },
 
     // Optimisations des dépendances

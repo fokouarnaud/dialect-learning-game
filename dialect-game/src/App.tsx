@@ -64,7 +64,7 @@ function gameStateReducer(state: GameStateType, action: GameAction): GameStateTy
         error: null,
       };
     
-    case 'END_GAME':
+    case 'END_GAME': {
       const newHighScore = Math.max(state.score, state.highScore);
       if (newHighScore > state.highScore) {
         localStorage.setItem('dialectGame_highScore', newHighScore.toString());
@@ -74,6 +74,7 @@ function gameStateReducer(state: GameStateType, action: GameAction): GameStateTy
         gameState: 'game_over',
         highScore: newHighScore,
       };
+    }
     
     case 'PAUSE_GAME':
       return { ...state, gameState: 'paused' };
@@ -81,7 +82,7 @@ function gameStateReducer(state: GameStateType, action: GameAction): GameStateTy
     case 'RESUME_GAME':
       return { ...state, gameState: 'playing' };
     
-    case 'UPDATE_SCORE':
+    case 'UPDATE_SCORE': {
       const newScore = state.score + action.payload;
       const newLevel = Math.floor(newScore / 1000) + 1;
       return {
@@ -89,9 +90,10 @@ function gameStateReducer(state: GameStateType, action: GameAction): GameStateTy
         score: newScore,
         level: newLevel,
       };
+    }
     
-    case 'VOICE_RESULT':
-      const { correct, confidence } = action.payload;
+    case 'VOICE_RESULT': {
+      const { correct } = action.payload;
       const newTotalAttempts = state.totalAttempts + 1;
       const newCorrectAttempts = state.correctAttempts + (correct ? 1 : 0);
       const newAccuracy = (newCorrectAttempts / newTotalAttempts) * 100;
@@ -104,6 +106,7 @@ function gameStateReducer(state: GameStateType, action: GameAction): GameStateTy
         accuracy: newAccuracy,
         streak: newStreak,
       };
+    }
     
     case 'RESET_STREAK':
       return { ...state, streak: 0 };
