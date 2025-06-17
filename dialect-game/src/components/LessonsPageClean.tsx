@@ -175,10 +175,11 @@ export const LessonsPageClean: React.FC = () => {
   const handleLessonSelect = (lesson: Lesson) => {
     setSelectedLesson(lesson);
     
-    if (lesson.status === 'locked' || lesson.difficulty === 'advanced') {
+    if (lesson.status === 'locked') {
       setShowNavigationGuard(true);
     } else {
-      navigate(`/lesson/${lesson.id}`);
+      // Navigate directly to game interface with lesson data
+      navigate(`/game-lesson?lessonId=${lesson.id}&chapterNumber=${currentChapter.number}`);
     }
   };
 

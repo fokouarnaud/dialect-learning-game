@@ -20,6 +20,8 @@ const LessonsPageGaming = lazy(() => import('./LessonsPageGaming'));
 const LessonsPageAdvanced = lazy(() => import('./LessonsPageAdvanced'));
 const LessonsPageClean = lazy(() => import('./LessonsPageClean'));
 const LessonPage = lazy(() => import('./LessonPage'));
+const GameLessonInterface = lazy(() => import('./GameLessonInterface'));
+const LessonCompleteInterface = lazy(() => import('./LessonCompleteInterface'));
 const ProgressPage = lazy(() => import('./ProgressPage'));
 const GameDashboard = lazy(() => import('./game/GameDashboard').then(module => ({ default: module.GameDashboard })));
 const TailwindTest = lazy(() => import('./TailwindTest'));
@@ -203,6 +205,22 @@ const ProgressPageWrapper: React.FC = () => (
   </Layout>
 );
 
+const GameLessonWrapper: React.FC = () => (
+  <Layout showNavigation={false}>
+    <Suspense fallback={<LoadingSpinner message="Loading game..." />}>
+      <GameLessonInterface />
+    </Suspense>
+  </Layout>
+);
+
+const LessonCompleteWrapper: React.FC = () => (
+  <Layout showNavigation={false}>
+    <Suspense fallback={<LoadingSpinner message="Loading results..." />}>
+      <LessonCompleteInterface />
+    </Suspense>
+  </Layout>
+);
+
 const GamePageWrapper: React.FC = () => (
   <Layout showBreadcrumbs>
     <Suspense fallback={<LoadingSpinner message="Loading game dashboard..." />}>
@@ -287,9 +305,11 @@ export function AppRouter() {
         {/* Landing page route - Gaming Version */}
         <Route path="/" element={<LandingPageWrapper />} />
         
-        {/* Main App Flow - Advanced Pagination Version */}
+        {/* Main App Flow - Clean Responsive Version */}
         <Route path="/lessons" element={<LessonsPageWrapper />} />
         <Route path="/lesson/:lessonId" element={<LessonPageWrapper />} />
+        <Route path="/game-lesson" element={<GameLessonWrapper />} />
+        <Route path="/lesson-complete" element={<LessonCompleteWrapper />} />
         <Route path="/progress" element={<ProgressPageWrapper />} />
         
         {/* Alternative Versions (for comparison) */}
