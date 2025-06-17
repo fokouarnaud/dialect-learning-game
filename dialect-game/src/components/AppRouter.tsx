@@ -17,6 +17,7 @@ const LandingPageEnhanced = lazy(() => import('./LandingPageEnhanced'));
 const LandingPageGaming = lazy(() => import('./LandingPageGaming'));
 const LessonsPage = lazy(() => import('./LessonsPage'));
 const LessonsPageGaming = lazy(() => import('./LessonsPageGaming'));
+const LessonsPageAdvanced = lazy(() => import('./LessonsPageAdvanced'));
 const LessonPage = lazy(() => import('./LessonPage'));
 const ProgressPage = lazy(() => import('./ProgressPage'));
 const GameDashboard = lazy(() => import('./game/GameDashboard').then(module => ({ default: module.GameDashboard })));
@@ -139,6 +140,14 @@ const LandingPageWrapper: React.FC = () => {
 };
 
 const LessonsPageWrapper: React.FC = () => (
+  <Layout showNavigation={false}>
+    <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
+      <LessonsPageAdvanced />
+    </Suspense>
+  </Layout>
+);
+
+const LessonsPageGamingWrapper: React.FC = () => (
   <Layout showNavigation={false}>
     <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
       <LessonsPageGaming />
@@ -269,14 +278,15 @@ export function AppRouter() {
         {/* Landing page route - Gaming Version */}
         <Route path="/" element={<LandingPageWrapper />} />
         
-        {/* Main App Flow - Gaming Version */}
+        {/* Main App Flow - Advanced Pagination Version */}
         <Route path="/lessons" element={<LessonsPageWrapper />} />
         <Route path="/lesson/:lessonId" element={<LessonPageWrapper />} />
         <Route path="/progress" element={<ProgressPageWrapper />} />
         
-        {/* Alternative Enhanced Version (for comparison) */}
+        {/* Alternative Versions (for comparison) */}
         <Route path="/enhanced" element={<LandingPageEnhancedWrapper />} />
         <Route path="/lessons-enhanced" element={<LessonsPageEnhancedWrapper />} />
+        <Route path="/lessons-gaming" element={<LessonsPageGamingWrapper />} />
         
         {/* Legacy Game routes */}
         <Route path="/game" element={<GamePageWrapper />} />
