@@ -13,9 +13,14 @@ import { cn } from '@/lib/utils';
 
 // Lazy load components for better performance
 const LandingPage = lazy(() => import('./LandingPage').then(module => ({ default: module.LandingPage })));
+const LandingPageEnhanced = lazy(() => import('./LandingPageEnhanced'));
+const LessonsPage = lazy(() => import('./LessonsPage'));
+const LessonPage = lazy(() => import('./LessonPage'));
+const ProgressPage = lazy(() => import('./ProgressPage'));
 const GameDashboard = lazy(() => import('./game/GameDashboard').then(module => ({ default: module.GameDashboard })));
 const TailwindTest = lazy(() => import('./TailwindTest'));
 const TestComponents = lazy(() => import('./TestComponents'));
+const Phase3Demo = lazy(() => import('./Phase3Demo'));
 
 // Loading component with enhanced UX
 const LoadingSpinner: React.FC<{ message?: string }> = ({ message = "Loading..." }) => (
@@ -79,8 +84,17 @@ const Layout: React.FC<{
     
     if (path === '/game') {
       breadcrumbs.push({ label: 'Game', path: '/game', isActive: true });
+    } else if (path === '/lessons') {
+      breadcrumbs.push({ label: 'Lessons', path: '/lessons', isActive: true });
+    } else if (path.startsWith('/lesson/')) {
+      breadcrumbs.push({ label: 'Lessons', path: '/lessons', isActive: false });
+      breadcrumbs.push({ label: 'Current Lesson', path: path, isActive: true });
+    } else if (path === '/progress') {
+      breadcrumbs.push({ label: 'Progress', path: '/progress', isActive: true });
     } else if (path === '/dashboard') {
       breadcrumbs.push({ label: 'Dashboard', path: '/dashboard', isActive: true });
+    } else if (path === '/phase3') {
+      breadcrumbs.push({ label: 'Phase 3 - EdClub Integration', path: '/phase3', isActive: true });
     } else if (path === '/tailwind-test') {
       breadcrumbs.push({ label: 'Tailwind Test', path: '/tailwind-test', isActive: true });
     } else if (path === '/components-test') {
@@ -113,18 +127,38 @@ const LandingPageWrapper: React.FC = () => {
   
   return (
     <Layout showNavigation={false}>
-      <Suspense fallback={<LoadingSpinner message="Loading landing page..." />}>
-        <LandingPage 
-          onPlayNow={() => navigate('/game')}
-          onLearnMore={() => {
-            const featuresSection = document.getElementById('features');
-            featuresSection?.scrollIntoView({ behavior: 'smooth' });
-          }}
+      <Suspense fallback={<LoadingSpinner message="Loading..." />}>
+        <LandingPageEnhanced
+          onGetStarted={() => navigate('/lessons')}
         />
       </Suspense>
     </Layout>
   );
 };
+
+const LessonsPageWrapper: React.FC = () => (
+  <Layout showNavigation={false}>
+    <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
+      <LessonsPage />
+    </Suspense>
+  </Layout>
+);
+
+const LessonPageWrapper: React.FC = () => (
+  <Layout showNavigation={false}>
+    <Suspense fallback={<LoadingSpinner message="Loading lesson..." />}>
+      <LessonPage />
+    </Suspense>
+  </Layout>
+);
+
+const ProgressPageWrapper: React.FC = () => (
+  <Layout showNavigation={false}>
+    <Suspense fallback={<LoadingSpinner message="Loading progress..." />}>
+      <ProgressPage />
+    </Suspense>
+  </Layout>
+);
 
 const GamePageWrapper: React.FC = () => (
   <Layout showBreadcrumbs>
@@ -210,24 +244,42 @@ export function AppRouter() {
         {/* Landing page route */}
         <Route path="/" element={<LandingPageWrapper />} />
         
-        {/* Game routes */}
+        {/* Main App Flow */}
+        <Route path="/lessons" element={<LessonsPageWrapper />} />
+        <Route path="/lesson/:lessonId" element={<LessonPageWrapper />} />
+        <Route path="/progress" element={<ProgressPageWrapper />} />
+        
+        {/* Legacy Game routes */}
         <Route path="/game" element={<GamePageWrapper />} />
         <Route path="/dashboard" element={<DashboardPageWrapper />} />
         
-        {/* Test routes */}
-        <Route 
-          path="/tailwind-test" 
-          element={<TestPageWrapper component={TailwindTest} title="Tailwind CSS Test" />} 
+        {/* Phase 3 - EdClub Integration Demo */}
+        <Route
+          path="/phase3"
+          element={<TestPageWrapper component={Phase3Demo} title="Phase 3 - EdClub Integration" />}
         />
-        <Route 
-          path="/components-test" 
-          element={<TestPageWrapper component={TestComponents} title="shadcn/ui Components Test" />} 
+        <Route
+          path="/demo"
+          element={<TestPageWrapper component={Phase3Demo} title="Interactive Demo" />}
+        />
+        
+        {/* Test routes */}
+        <Route
+          path="/tailwind-test"
+          element={<TestPageWrapper component={TailwindTest} title="Tailwind CSS Test" />}
+        />
+        <Route
+          path="/components-test"
+          element={<TestPageWrapper component={TestComponents} title="shadcn/ui Components Test" />}
         />
         
         {/* Redirects for legacy routes */}
         <Route path="/home" element={<Navigate to="/" replace />} />
-        <Route path="/play" element={<Navigate to="/game" replace />} />
-        <Route path="/stats" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/play" element={<Navigate to="/lessons" replace />} />
+        <Route path="/learn" element={<Navigate to="/lessons" replace />} />
+        <Route path="/stats" element={<Navigate to="/progress" replace />} />
+        <Route path="/achievements" element={<Navigate to="/progress" replace />} />
+        <Route path="/goals" element={<Navigate to="/progress" replace />} />
         
         {/* 404 route */}
         <Route path="*" element={<NotFoundPage />} />
