@@ -14,7 +14,9 @@ import { cn } from '@/lib/utils';
 // Lazy load components for better performance
 const LandingPage = lazy(() => import('./LandingPage').then(module => ({ default: module.LandingPage })));
 const LandingPageEnhanced = lazy(() => import('./LandingPageEnhanced'));
+const LandingPageGaming = lazy(() => import('./LandingPageGaming'));
 const LessonsPage = lazy(() => import('./LessonsPage'));
+const LessonsPageGaming = lazy(() => import('./LessonsPageGaming'));
 const LessonPage = lazy(() => import('./LessonPage'));
 const ProgressPage = lazy(() => import('./ProgressPage'));
 const GameDashboard = lazy(() => import('./game/GameDashboard').then(module => ({ default: module.GameDashboard })));
@@ -121,14 +123,14 @@ const Layout: React.FC<{
   );
 };
 
-// Enhanced route wrappers
+// Gaming route wrappers
 const LandingPageWrapper: React.FC = () => {
   const navigate = useNavigate();
   
   return (
     <Layout showNavigation={false}>
       <Suspense fallback={<LoadingSpinner message="Loading..." />}>
-        <LandingPageEnhanced
+        <LandingPageGaming
           onGetStarted={() => navigate('/lessons')}
         />
       </Suspense>
@@ -137,6 +139,29 @@ const LandingPageWrapper: React.FC = () => {
 };
 
 const LessonsPageWrapper: React.FC = () => (
+  <Layout showNavigation={false}>
+    <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
+      <LessonsPageGaming />
+    </Suspense>
+  </Layout>
+);
+
+// Alternative Enhanced wrappers (for testing)
+const LandingPageEnhancedWrapper: React.FC = () => {
+  const navigate = useNavigate();
+  
+  return (
+    <Layout showNavigation={false}>
+      <Suspense fallback={<LoadingSpinner message="Loading..." />}>
+        <LandingPageEnhanced
+          onGetStarted={() => navigate('/lessons-enhanced')}
+        />
+      </Suspense>
+    </Layout>
+  );
+};
+
+const LessonsPageEnhancedWrapper: React.FC = () => (
   <Layout showNavigation={false}>
     <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
       <LessonsPage />
@@ -241,13 +266,17 @@ export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Landing page route */}
+        {/* Landing page route - Gaming Version */}
         <Route path="/" element={<LandingPageWrapper />} />
         
-        {/* Main App Flow */}
+        {/* Main App Flow - Gaming Version */}
         <Route path="/lessons" element={<LessonsPageWrapper />} />
         <Route path="/lesson/:lessonId" element={<LessonPageWrapper />} />
         <Route path="/progress" element={<ProgressPageWrapper />} />
+        
+        {/* Alternative Enhanced Version (for comparison) */}
+        <Route path="/enhanced" element={<LandingPageEnhancedWrapper />} />
+        <Route path="/lessons-enhanced" element={<LessonsPageEnhancedWrapper />} />
         
         {/* Legacy Game routes */}
         <Route path="/game" element={<GamePageWrapper />} />
