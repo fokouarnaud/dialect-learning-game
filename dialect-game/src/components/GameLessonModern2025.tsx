@@ -151,11 +151,19 @@ export const GameLessonModern2025: React.FC = () => {
   };
 
   const startRecording = () => {
-    setGameState(prev => ({ 
-      ...prev, 
-      isRecording: true, 
+    // Clear any existing timers first
+    if (recordingTimeoutRef.current) {
+      clearTimeout(recordingTimeoutRef.current);
+    }
+    if (audioAnimationRef.current) {
+      clearInterval(audioAnimationRef.current);
+    }
+
+    setGameState(prev => ({
+      ...prev,
+      isRecording: true,
       phase: 'recording',
-      timeRemaining: 10 
+      timeRemaining: 10
     }));
     
     // Animate audio level
@@ -163,38 +171,60 @@ export const GameLessonModern2025: React.FC = () => {
       setAudioLevel(Math.random() * 100);
     }, 150);
 
-    // Countdown timer
-    const countdown = setInterval(() => {
-      setGameState(prev => {
-        if (prev.timeRemaining <= 1) {
-          clearInterval(countdown);
-          stopRecording();
-          return { ...prev, timeRemaining: 0 };
-        }
-        return { ...prev, timeRemaining: prev.timeRemaining - 1 };
-      });
-    }, 1000);
+    // Countdown timer with proper cleanup
+    let countdownTimer: NodeJS.Timeout;
+    
+    const startCountdown = () => {
+      countdownTimer = setInterval(() => {
+        setGameState(prev => {
+          if (prev.timeRemaining <= 1 || !prev.isRecording) {
+            clearInterval(countdownTimer);
+            if (prev.isRecording) {
+              stopRecording();
+            }
+            return { ...prev, timeRemaining: 0 };
+          }
+          return { ...prev, timeRemaining: prev.timeRemaining - 1 };
+        });
+      }, 1000);
+    };
+
+    startCountdown();
 
     // Auto-stop recording after 10 seconds max
     recordingTimeoutRef.current = setTimeout(() => {
-      clearInterval(countdown);
-      stopRecording();
+      clearInterval(countdownTimer);
+      if (gameState.isRecording) {
+        stopRecording();
+      }
     }, 10000);
   };
 
   const stopRecording = () => {
-    setGameState(prev => ({ 
-      ...prev, 
-      isRecording: false, 
-      phase: 'processing' 
-    }));
+    // Immediately set recording to false to prevent multiple calls
+    setGameState(prev => {
+      if (!prev.isRecording) return prev; // Already stopped
+      return {
+        ...prev,
+        isRecording: false,
+        phase: 'processing',
+        timeRemaining: 0
+      };
+    });
+    
     setAudioLevel(0);
     
+    // Clear all timers
     if (audioAnimationRef.current) {
       clearInterval(audioAnimationRef.current);
+      audioAnimationRef.current = null;
     }
     if (recordingTimeoutRef.current) {
       clearTimeout(recordingTimeoutRef.current);
+      recordingTimeoutRef.current = null;
+    }
+    if (phaseTimeoutRef.current) {
+      clearTimeout(phaseTimeoutRef.current);
     }
 
     // Simulate AI processing (2 seconds)

@@ -13,14 +13,9 @@ import { cn } from '@/lib/utils';
 
 // Lazy load components for better performance
 const LandingPage = lazy(() => import('./LandingPage').then(module => ({ default: module.LandingPage })));
-const LandingPageEnhanced = lazy(() => import('./LandingPageEnhanced'));
 const LandingPageGaming = lazy(() => import('./LandingPageGaming'));
-const LessonsPage = lazy(() => import('./LessonsPage'));
-const LessonsPageGaming = lazy(() => import('./LessonsPageGaming'));
-const LessonsPageAdvanced = lazy(() => import('./LessonsPageAdvanced'));
 const LessonsPageClean = lazy(() => import('./LessonsPageClean'));
 const LessonPage = lazy(() => import('./LessonPage'));
-const GameLessonInterface = lazy(() => import('./GameLessonInterface'));
 const GameLessonModern2025 = lazy(() => import('./GameLessonModern2025'));
 const LessonCompleteInterface = lazy(() => import('./LessonCompleteInterface'));
 const ProgressPage = lazy(() => import('./ProgressPage'));
@@ -151,44 +146,6 @@ const LessonsPageWrapper: React.FC = () => (
   </Layout>
 );
 
-const LessonsPageAdvancedWrapper: React.FC = () => (
-  <Layout showNavigation={false}>
-    <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
-      <LessonsPageAdvanced />
-    </Suspense>
-  </Layout>
-);
-
-const LessonsPageGamingWrapper: React.FC = () => (
-  <Layout showNavigation={false}>
-    <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
-      <LessonsPageGaming />
-    </Suspense>
-  </Layout>
-);
-
-// Alternative Enhanced wrappers (for testing)
-const LandingPageEnhancedWrapper: React.FC = () => {
-  const navigate = useNavigate();
-  
-  return (
-    <Layout showNavigation={false}>
-      <Suspense fallback={<LoadingSpinner message="Loading..." />}>
-        <LandingPageEnhanced
-          onGetStarted={() => navigate('/lessons-enhanced')}
-        />
-      </Suspense>
-    </Layout>
-  );
-};
-
-const LessonsPageEnhancedWrapper: React.FC = () => (
-  <Layout showNavigation={false}>
-    <Suspense fallback={<LoadingSpinner message="Loading lessons..." />}>
-      <LessonsPage />
-    </Suspense>
-  </Layout>
-);
 
 const LessonPageWrapper: React.FC = () => (
   <Layout showNavigation={false}>
@@ -214,13 +171,6 @@ const GameLessonWrapper: React.FC = () => (
   </Layout>
 );
 
-const GameLessonClassicWrapper: React.FC = () => (
-  <Layout showNavigation={false}>
-    <Suspense fallback={<LoadingSpinner message="Loading game..." />}>
-      <GameLessonInterface />
-    </Suspense>
-  </Layout>
-);
 
 const LessonCompleteWrapper: React.FC = () => (
   <Layout showNavigation={false}>
@@ -321,12 +271,6 @@ export function AppRouter() {
         <Route path="/lesson-complete" element={<LessonCompleteWrapper />} />
         <Route path="/progress" element={<ProgressPageWrapper />} />
         
-        {/* Alternative Versions (for comparison) */}
-        <Route path="/enhanced" element={<LandingPageEnhancedWrapper />} />
-        <Route path="/lessons-enhanced" element={<LessonsPageEnhancedWrapper />} />
-        <Route path="/lessons-gaming" element={<LessonsPageGamingWrapper />} />
-        <Route path="/lessons-advanced" element={<LessonsPageAdvancedWrapper />} />
-        <Route path="/game-lesson-classic" element={<GameLessonClassicWrapper />} />
         
         {/* Legacy Game routes */}
         <Route path="/game" element={<GamePageWrapper />} />

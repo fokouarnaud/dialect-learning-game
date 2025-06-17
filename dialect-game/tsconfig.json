@@ -16,5 +16,8 @@
     "forceConsistentCasingInFileNames": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false
-  }
+  },
+  "exclude": [
+    "src/components/backup/**/*"
+  ]
 }
