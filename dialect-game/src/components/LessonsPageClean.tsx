@@ -1,6 +1,6 @@
 /**
- * Clean Lessons Page with Vertical Pagination
- * One chapter per page with smooth animations and minimal distractions
+ * Clean Lessons Page with User-Centered Design
+ * Focus on lessons list with minimal distractions and responsive layout
  */
 
 import React, { useState, useEffect } from 'react';
@@ -8,8 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
-import { 
-  ArrowLeft, 
+import {
+  ArrowLeft,
   Play,
   CheckCircle,
   Lock,
@@ -18,7 +18,11 @@ import {
   List,
   ChevronUp,
   ChevronDown,
-  X
+  X,
+  Grid3X3,
+  LayoutList,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Lesson } from './LessonSelector';
@@ -138,6 +142,8 @@ export const LessonsPageClean: React.FC = () => {
   const [showNavigationGuard, setShowNavigationGuard] = useState(false);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showChapterInfo, setShowChapterInfo] = useState(true);
 
   const currentChapter = chapters[currentChapterIndex];
   const totalChapters = chapters.length;
@@ -169,9 +175,10 @@ export const LessonsPageClean: React.FC = () => {
         setCurrentChapterIndex(Math.max(0, Math.min(totalChapters - 1, index)));
         setIsTransitioning(false);
         setShowTableOfContents(false);
+        // Garder les détails du chapitre visibles après sélection
       }, 150);
     } else {
-      // Si même chapitre, juste fermer la table des matières
+      // Fermer seulement la table des matières, garder chapter info
       setShowTableOfContents(false);
     }
   };
@@ -182,7 +189,6 @@ export const LessonsPageClean: React.FC = () => {
     if (lesson.status === 'locked') {
       setShowNavigationGuard(true);
     } else {
-      // Navigate directly to game interface with lesson data
       navigate(`/game-lesson?lessonId=${lesson.id}&chapterNumber=${currentChapter.number}`);
     }
   };
@@ -224,7 +230,12 @@ export const LessonsPageClean: React.FC = () => {
           }
           break;
         case 'Escape':
-          setShowTableOfContents(false);
+          if (showTableOfContents) {
+            setShowTableOfContents(false);
+          } else {
+            // Toggle chapter info seulement si table of contents n'est pas ouverte
+            setShowChapterInfo(!showChapterInfo);
+          }
           break;
       }
     };
@@ -235,256 +246,365 @@ export const LessonsPageClean: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted relative">
-      {/* Header */}
-      <header className="bg-background/50 backdrop-blur-md border-b border-border sticky top-0 z-40">
-        <div className="container mx-auto px-6 py-4">
+      {/* Minimal Header - UI/UX Best Practices */}
+      <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
+            {/* Left - Back Navigation */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate('/')}
-              className="text-muted-foreground hover:text-foreground hover:bg-muted"
+              className="text-muted-foreground hover:text-foreground hover:bg-muted p-2"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              MAIN MENU
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:ml-2 sm:inline">Back</span>
             </Button>
             
-            <div className="text-center">
-              <h1 className="text-xl font-bold text-foreground">
-                Chapter {currentChapter.number}: {currentChapter.title}
-              </h1>
-              <p className="text-sm text-muted-foreground">{currentChapter.description}</p>
+            {/* Center - Chapter Control with Clear State */}
+            <div className="flex items-center gap-2 text-sm">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowChapterInfo(!showChapterInfo)}
+                className="text-muted-foreground hover:text-foreground p-1 transition-all duration-200"
+                title={showChapterInfo ? 'Hide chapter details' : 'Show chapter details'}
+              >
+                <span className="font-medium">Ch. {currentChapter.number}</span>
+                <ChevronDown className={`h-3 w-3 ml-1 transition-transform duration-200 ${showChapterInfo ? 'rotate-180' : ''}`} />
+              </Button>
+              
+              {/* Chapter Navigation */}
+              <div className="hidden sm:flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handlePreviousChapter}
+                  disabled={currentChapterIndex === 0}
+                  className="p-1 h-7 w-7"
+                >
+                  <ChevronLeft className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleNextChapter}
+                  disabled={currentChapterIndex === totalChapters - 1}
+                  className="p-1 h-7 w-7"
+                >
+                  <ChevronRight className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            {/* Right - Controls */}
+            <div className="flex items-center gap-1">
+              {/* View Mode Toggle */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                className="p-2 h-8 w-8"
+                title={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
+              >
+                {viewMode === 'grid' ?
+                  <LayoutList className="h-4 w-4" /> :
+                  <Grid3X3 className="h-4 w-4" />
+                }
+              </Button>
+              
+              {/* Table of Contents - Mobile Only */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowTableOfContents(true)}
+                className="p-2 h-8 w-8 lg:hidden"
+                title="Chapters"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+              
+              {/* Theme Toggle */}
               <ThemeToggle />
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex">
-        {/* Desktop Vertical Pagination Bar */}
-        <div className="hidden lg:block fixed left-6 top-1/2 transform -translate-y-1/2 z-30">
-          <div className="flex flex-col items-center space-y-4">
-            {/* Table of Contents Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowTableOfContents(true)}
-              className="bg-card/80 border-border text-muted-foreground hover:bg-muted p-2"
-              title="Table of Contents"
-            >
-              <List className="h-4 w-4" />
-            </Button>
+      {/* Chapter Info - Optimized Display (Default Shown) */}
+      {showChapterInfo && (
+        <div className="bg-muted/30 border-b border-border">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className={`w-3 h-3 rounded-full ${getDifficultyColor(currentChapter.difficulty)} flex-shrink-0`}></div>
+                  <h2 className="text-lg font-semibold text-foreground truncate">{currentChapter.title}</h2>
+                  <Badge className={`${getDifficultyColor(currentChapter.difficulty)} text-white text-xs flex-shrink-0`}>
+                    {currentChapter.difficulty.toUpperCase()}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">{currentChapter.description}</p>
+              </div>
+              
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <div className="text-right">
+                  <div className="text-sm font-medium text-foreground">
+                    {currentChapter.completedLessons}/{currentChapter.totalLessons} lessons
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {currentChapter.estimatedTime}min total
+                  </div>
+                </div>
+                
+                {/* Mini Progress Indicator */}
+                <div className="w-20 bg-muted rounded-full h-1.5">
+                  <div
+                    className="h-1.5 bg-primary rounded-full transition-all duration-500"
+                    style={{ width: `${(currentChapter.completedLessons / currentChapter.totalLessons) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-            {/* Previous Chapter Button */}
+      {/* Desktop Vertical Navigation - Optimized positioning */}
+      <div className="hidden lg:block fixed left-4 z-30" style={{
+        top: showChapterInfo ? 'calc(20% + 60px)' : 'calc(30% + 20px)'
+      }}>
+        <div className="flex flex-col items-center space-y-3">
+          {/* Table of Contents Button - Directly above navigation */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowTableOfContents(true)}
+            className="bg-card/90 border-border text-muted-foreground hover:bg-muted hover:text-foreground p-2 shadow-sm"
+            title="All Chapters"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+
+          {/* Previous Chapter Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handlePreviousChapter}
+            disabled={currentChapterIndex === 0}
+            className="text-muted-foreground hover:text-foreground p-2 opacity-70 hover:opacity-100 transition-opacity"
+            title={`Previous: ${currentChapterIndex > 0 ? chapters[currentChapterIndex - 1].title : 'None'}`}
+          >
+            <ChevronUp className="h-4 w-4" />
+          </Button>
+
+          {/* Vertical Progress Bar - Compact */}
+          <div className="relative">
+            <div className="w-1 h-48 bg-muted rounded-full">
+              <div
+                className="w-1 bg-gradient-to-t from-primary to-primary/60 rounded-full transition-all duration-500"
+                style={{ height: `${((currentChapterIndex + 1) / totalChapters) * 100}%` }}
+              ></div>
+            </div>
+            
+            {/* Current Position Indicator - More Visible */}
+            <div
+              className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-primary rounded-full border-2 border-background shadow-md transition-all duration-500"
+              style={{ top: `${(currentChapterIndex / (totalChapters - 1)) * 180}px` }}
+            >
+              <div className="w-2 h-2 bg-primary-foreground rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+            </div>
+          </div>
+
+          {/* Next Chapter Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleNextChapter}
+            disabled={currentChapterIndex === totalChapters - 1}
+            className="text-muted-foreground hover:text-foreground p-2 opacity-70 hover:opacity-100 transition-opacity"
+            title={`Next: ${currentChapterIndex < totalChapters - 1 ? chapters[currentChapterIndex + 1].title : 'None'}`}
+          >
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+
+          {/* Chapter Counter - Prominent Current Page */}
+          <div className="text-center mt-2">
+            <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shadow-md">
+              {currentChapterIndex + 1}
+            </div>
+            <div className="text-[10px] text-muted-foreground mt-1 opacity-70">
+              of {totalChapters}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content - With Left Margin for Pagination */}
+      <div className="container mx-auto px-4 lg:pl-16 py-6 pb-20">
+        <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-50 transform translate-y-4' : 'opacity-100 transform translate-y-0'}`}>
+          
+          {/* Lessons - Main Content Focus */}
+          <div className={
+            viewMode === 'grid'
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+              : "space-y-3"
+          }>
+            {currentChapter.lessons.map((lesson, index) => {
+              if (viewMode === 'list') {
+                // List View - Compact horizontal layout
+                return (
+                  <Card
+                    key={lesson.id}
+                    className={`
+                      group cursor-pointer transition-all duration-200 hover:bg-muted/30
+                      bg-card border border-border hover:border-primary/50
+                      ${lesson.isRecommended ? 'ring-1 ring-accent/30' : ''}
+                      ${lesson.status === 'locked' ? 'opacity-60 cursor-not-allowed' : ''}
+                    `}
+                    onClick={() => lesson.status !== 'locked' && handleLessonSelect(lesson)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        {/* Left - Lesson Info */}
+                        <div className="flex items-center gap-3 flex-1">
+                          {getStatusIcon(lesson.status)}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-medium text-foreground group-hover:text-primary transition-colors truncate">
+                                {lesson.title}
+                              </h3>
+                              {lesson.isRecommended && (
+                                <Star className="h-3 w-3 text-accent fill-current flex-shrink-0" />
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground truncate">
+                              {lesson.description}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {/* Center - Meta Info */}
+                        <div className="hidden sm:flex items-center gap-2 mx-4">
+                          <Badge variant="outline" className="text-xs">
+                            {lesson.duration}min
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {lesson.xpReward}XP
+                          </Badge>
+                        </div>
+                        
+                        {/* Right - Action */}
+                        <Button
+                          size="sm"
+                          className={`${
+                            lesson.status === 'current'
+                              ? 'bg-primary hover:bg-primary/80'
+                              : lesson.status === 'completed'
+                              ? 'bg-accent hover:bg-accent/80'
+                              : lesson.status === 'locked'
+                              ? 'bg-muted cursor-not-allowed'
+                              : 'bg-secondary hover:bg-secondary/80'
+                          }`}
+                          disabled={lesson.status === 'locked'}
+                        >
+                          {lesson.status === 'completed' ? 'Review' :
+                           lesson.status === 'current' ? 'Continue' :
+                           lesson.status === 'locked' ? 'Locked' : 'Start'}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              } else {
+                // Grid View - Card layout optimized
+                return (
+                  <Card
+                    key={lesson.id}
+                    className={`
+                      group cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg
+                      bg-card border border-border hover:border-primary/50 hover:shadow-primary/10
+                      ${lesson.isRecommended ? 'ring-1 ring-accent/30' : ''}
+                      ${lesson.status === 'locked' ? 'opacity-60 cursor-not-allowed' : ''}
+                    `}
+                    onClick={() => lesson.status !== 'locked' && handleLessonSelect(lesson)}
+                  >
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(lesson.status)}
+                          {lesson.isRecommended && (
+                            <Star className="h-3 w-3 text-accent fill-current" />
+                          )}
+                        </div>
+                        <div className="flex gap-1">
+                          <Badge variant="outline" className="text-xs">
+                            {lesson.duration}min
+                          </Badge>
+                        </div>
+                      </div>
+                      <CardTitle className="text-base text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                        {lesson.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm text-muted-foreground line-clamp-2">
+                        {lesson.description}
+                      </CardDescription>
+                    </CardHeader>
+                    
+                    <CardContent className="pt-0">
+                      <Button
+                        size="sm"
+                        className={`w-full font-medium transition-all duration-300 ${
+                          lesson.status === 'current'
+                            ? 'bg-primary hover:bg-primary/80 text-primary-foreground'
+                            : lesson.status === 'completed'
+                            ? 'bg-accent hover:bg-accent/80 text-accent-foreground'
+                            : lesson.status === 'locked'
+                            ? 'bg-muted cursor-not-allowed text-muted-foreground'
+                            : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
+                        }`}
+                        disabled={lesson.status === 'locked'}
+                      >
+                        {lesson.status === 'completed' ? '🏆 Review' :
+                         lesson.status === 'current' ? '⚡ Continue' :
+                         lesson.status === 'locked' ? '🔒 Locked' : '🎮 Start'}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              }
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Navigation - Minimal */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 md:hidden">
+        <div className="bg-card/95 backdrop-blur-md border border-border rounded-full px-4 py-2 shadow-lg">
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={handlePreviousChapter}
               disabled={currentChapterIndex === 0}
-              className="text-muted-foreground hover:text-foreground p-2"
+              className="p-2 h-8 w-8"
             >
-              <ChevronUp className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4" />
             </Button>
-
-            {/* Vertical Progress Bar */}
-            <div className="relative">
-              <div className="w-1 h-64 bg-muted rounded-full">
-                <div
-                  className="w-1 bg-gradient-to-t from-primary to-primary/60 rounded-full transition-all duration-500"
-                  style={{ height: `${((currentChapterIndex + 1) / totalChapters) * 100}%` }}
-                ></div>
-              </div>
-              
-              {/* Current Position Indicator */}
-              <div
-                className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-accent rounded-full border-2 border-background transition-all duration-500"
-                style={{ top: `${(currentChapterIndex / (totalChapters - 1)) * 240}px` }}
-              >
-                <div className="w-2 h-2 bg-accent-foreground rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-              </div>
-            </div>
-
-            {/* Next Chapter Button */}
+            
+            <span className="text-sm font-medium text-muted-foreground px-2">
+              {currentChapterIndex + 1} / {totalChapters}
+            </span>
+            
             <Button
               variant="ghost"
               size="sm"
               onClick={handleNextChapter}
               disabled={currentChapterIndex === totalChapters - 1}
-              className="text-muted-foreground hover:text-foreground p-2"
+              className="p-2 h-8 w-8"
             >
-              <ChevronDown className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4" />
             </Button>
-
-            {/* Chapter Counter */}
-            <div className="text-center text-xs text-muted-foreground">
-              <div className="font-bold text-foreground">{currentChapterIndex + 1}</div>
-              <div>of {totalChapters}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Bottom Navigation */}
-        <div className="lg:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30">
-          <div className="bg-card/90 backdrop-blur-md border border-border rounded-full px-6 py-3 shadow-xl">
-            <div className="flex items-center gap-4">
-              {/* Previous Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handlePreviousChapter}
-                disabled={currentChapterIndex === 0}
-                className="text-muted-foreground hover:text-foreground p-2 rounded-full"
-              >
-                <ChevronUp className="h-5 w-5" />
-              </Button>
-
-              {/* Table of Contents */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowTableOfContents(true)}
-                className="bg-card/80 border-border text-muted-foreground hover:bg-muted px-4 py-2 rounded-full"
-              >
-                <List className="h-4 w-4 mr-2" />
-                <span className="text-xs font-medium">{currentChapterIndex + 1}/{totalChapters}</span>
-              </Button>
-
-              {/* Next Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleNextChapter}
-                disabled={currentChapterIndex === totalChapters - 1}
-                className="text-muted-foreground hover:text-foreground p-2 rounded-full"
-              >
-                <ChevronDown className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Mobile Progress Bar */}
-            <div className="mt-3 w-48 h-1 bg-muted rounded-full">
-              <div
-                className="h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all duration-500"
-                style={{ width: `${((currentChapterIndex + 1) / totalChapters) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 lg:ml-24 lg:mr-6">
-          <div className="container mx-auto px-4 lg:px-6 py-8 pb-24 lg:pb-8">
-            <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-50 transform translate-y-4' : 'opacity-100 transform translate-y-0'}`}>
-              {/* Chapter Header */}
-              <Card className="mb-6 lg:mb-8 bg-gradient-to-r from-card to-muted border-2 border-primary/30">
-                <CardContent className="p-4 lg:p-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-4 h-4 rounded-full ${getDifficultyColor(currentChapter.difficulty)}`}></div>
-                      <div>
-                        <h2 className="text-3xl font-bold text-foreground mb-2">
-                          Chapter {currentChapter.number}
-                        </h2>
-                        <h3 className="text-xl text-primary mb-2">{currentChapter.title}</h3>
-                        <p className="text-muted-foreground">{currentChapter.description}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="text-right">
-                      <Badge className={`${getDifficultyColor(currentChapter.difficulty)} text-white font-bold mb-2`}>
-                        {currentChapter.difficulty.toUpperCase()}
-                      </Badge>
-                      <div className="text-sm text-muted-foreground">
-                        {currentChapter.estimatedTime} minutes
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Chapter Progress */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Chapter Progress</span>
-                      <span className="text-primary font-bold">
-                        {currentChapter.completedLessons}/{currentChapter.totalLessons} lessons
-                      </span>
-                    </div>
-                    <Progress
-                      value={(currentChapter.completedLessons / currentChapter.totalLessons) * 100}
-                      className="h-3"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Lessons Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {currentChapter.lessons.map((lesson, index) => (
-                  <Card
-                    key={lesson.id}
-                    className={`
-                      group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl
-                      bg-gradient-to-br from-card to-muted border border-border
-                      hover:border-primary/50 hover:shadow-primary/20
-                      ${lesson.isRecommended ? 'ring-2 ring-accent/30' : ''}
-                      ${lesson.status === 'locked' ? 'opacity-60 cursor-not-allowed' : ''}
-                    `}
-                    onClick={() => lesson.status !== 'locked' && handleLessonSelect(lesson)}
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3">
-                          {getStatusIcon(lesson.status)}
-                          <div>
-                            <CardTitle className="text-lg text-foreground group-hover:text-primary transition-colors">
-                              {lesson.title}
-                              {lesson.isRecommended && (
-                                <Star className="h-4 w-4 text-accent fill-current inline ml-2" />
-                              )}
-                            </CardTitle>
-                          </div>
-                        </div>
-                      </div>
-                      <CardDescription className="text-muted-foreground text-sm">
-                        {lesson.description}
-                      </CardDescription>
-                    </CardHeader>
-                    
-                    <CardContent>
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex gap-2">
-                          <Badge variant="outline" className="text-xs text-muted-foreground">
-                            {lesson.duration}min
-                          </Badge>
-                          <Badge variant="outline" className="text-xs text-muted-foreground">
-                            {lesson.xpReward}XP
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <Button
-                        className={`w-full font-bold transition-all duration-300 ${
-                          lesson.status === 'current' 
-                            ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black'
-                            : lesson.status === 'completed'
-                            ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500'
-                            : lesson.status === 'locked'
-                            ? 'bg-gray-600 cursor-not-allowed'
-                            : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500'
-                        }`}
-                        disabled={lesson.status === 'locked'}
-                      >
-                        {lesson.status === 'completed' ? '🏆 REVIEW' :
-                         lesson.status === 'current' ? '⚡ CONTINUE' :
-                         lesson.status === 'locked' ? '🔒 LOCKED' : '🎮 START'}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
