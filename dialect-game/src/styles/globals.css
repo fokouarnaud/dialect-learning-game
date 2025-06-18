@@ -4,26 +4,35 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    /* Light Mode - UI/UX 2025 Best Practices */
+    --background: 0 0% 98%;           /* Off-white background (prevents eye strain) */
+    --foreground: 220 9% 15%;         /* Warm dark gray text (not pure black) */
+    --card: 0 0% 100%;                /* Pure white cards (contrast with background) */
+    --card-foreground: 220 9% 15%;    /* Consistent text color */
+    --popover: 0 0% 100%;             /* White popover for contrast */
+    --popover-foreground: 220 9% 15%; /* Dark text in popover */
+    --primary: 212 100% 47%;          /* Vibrant blue primary */
+    --primary-foreground: 0 0% 98%;   /* Light text on primary */
+    --secondary: 210 40% 94%;         /* Subtle gray secondary */
+    --secondary-foreground: 220 9% 15%; /* Dark text on secondary */
+    --muted: 210 40% 96%;             /* Very light muted background */
+    --muted-foreground: 220 9% 46%;   /* Medium gray text (better contrast) */
+    --accent: 142 76% 36%;            /* Green accent for gaming */
+    --accent-foreground: 0 0% 98%;    /* Light text on accent */
+    --destructive: 0 84.2% 60.2%;     /* Red destructive */
+    --destructive-foreground: 0 0% 98%; /* White on destructive */
+    --border: 220 13% 91%;            /* Subtle border color */
+    --input: 220 13% 91%;             /* Input border */
+    --ring: 212 100% 47%;             /* Focus ring */
     --radius: 0.5rem;
+    
+    /* Gaming Colors for Light Mode */
+    --gaming-primary: 212 100% 47%;   /* Blue gaming primary */
+    --gaming-secondary: 262 83% 58%;  /* Purple gaming secondary */
+    --gaming-accent: 173 100% 40%;    /* Teal gaming accent */
+    --gaming-success: 142 76% 36%;    /* Green success */
+    --gaming-warning: 38 92% 50%;     /* Orange warning */
+    --gaming-error: 0 84% 60%;        /* Red error */
     
     /* Custom variables for fonts */
     --font-display: 'Poppins', system-ui, sans-serif;
@@ -37,25 +46,35 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    /* Dark Mode - True Dark Colors */
+    --background: 224 71.4% 4.1%;     /* Very dark blue-gray background */
+    --foreground: 210 20% 98%;        /* Almost white text */
+    --card: 224 71.4% 4.1%;           /* Dark cards */
+    --card-foreground: 210 20% 98%;   /* Light text on cards */
+    --popover: 224 71.4% 4.1%;        /* Dark popover */
+    --popover-foreground: 210 20% 98%; /* Light text in popover */
+    --primary: 263.4 70% 50.4%;       /* Purple primary */
+    --primary-foreground: 210 20% 98%; /* Light text on primary */
+    --secondary: 215 27.9% 16.9%;     /* Dark gray secondary */
+    --secondary-foreground: 210 20% 98%; /* Light text on secondary */
+    --muted: 215 27.9% 16.9%;         /* Dark muted */
+    --muted-foreground: 217.9 10.6% 64.9%; /* Medium gray text */
+    --accent: 215 27.9% 16.9%;        /* Dark accent */
+    --accent-foreground: 210 20% 98%; /* Light accent text */
+    --destructive: 0 62.8% 30.6%;     /* Dark red destructive */
+    --destructive-foreground: 210 20% 98%; /* Light on destructive */
+    --border: 215 27.9% 16.9%;        /* Dark border */
+    --input: 215 27.9% 16.9%;         /* Dark input border */
+    --ring: 263.4 70% 50.4%;          /* Purple focus ring */
+    
+    /* Gaming Colors for Dark Mode */
+    --gaming-primary: 263.4 70% 50.4%; /* Purple gaming primary */
+    --gaming-secondary: 217.2 91.2% 59.8%; /* Blue gaming secondary */
+    --gaming-accent: 173 100% 40%;      /* Teal gaming accent */
+    --gaming-success: 142 76% 36%;      /* Green success */
+    --gaming-warning: 38 92% 50%;       /* Orange warning */
+    --gaming-error: 0 84% 60%;          /* Red error */
+    
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;

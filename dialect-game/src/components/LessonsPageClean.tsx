@@ -23,6 +23,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import type { Lesson } from './LessonSelector';
 import NavigationGuard from './NavigationGuard';
+import { ThemeToggle } from './theme/ThemeToggleSimple';
 
 interface Chapter {
   id: string;
@@ -226,29 +227,31 @@ export const LessonsPageClean: React.FC = () => {
   }, [currentChapterIndex, showTableOfContents]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted relative">
       {/* Header */}
-      <header className="bg-black/50 backdrop-blur-md border-b border-purple-500/30 sticky top-0 z-40">
+      <header className="bg-background/50 backdrop-blur-md border-b border-border sticky top-0 z-40">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => navigate('/')}
-              className="text-purple-300 hover:text-white hover:bg-purple-500/20"
+              className="text-muted-foreground hover:text-foreground hover:bg-muted"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               MAIN MENU
             </Button>
             
             <div className="text-center">
-              <h1 className="text-xl font-bold text-white">
+              <h1 className="text-xl font-bold text-foreground">
                 Chapter {currentChapter.number}: {currentChapter.title}
               </h1>
-              <p className="text-sm text-gray-400">{currentChapter.description}</p>
+              <p className="text-sm text-muted-foreground">{currentChapter.description}</p>
             </div>
             
-            <div className="w-24"></div> {/* Spacer for balance */}
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>
@@ -262,7 +265,7 @@ export const LessonsPageClean: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => setShowTableOfContents(true)}
-              className="bg-gray-800/80 border-gray-600 text-gray-300 hover:bg-gray-700 p-2"
+              className="bg-card/80 border-border text-muted-foreground hover:bg-muted p-2"
               title="Table of Contents"
             >
               <List className="h-4 w-4" />
@@ -274,26 +277,26 @@ export const LessonsPageClean: React.FC = () => {
               size="sm"
               onClick={handlePreviousChapter}
               disabled={currentChapterIndex === 0}
-              className="text-gray-400 hover:text-white p-2"
+              className="text-muted-foreground hover:text-foreground p-2"
             >
               <ChevronUp className="h-4 w-4" />
             </Button>
 
             {/* Vertical Progress Bar */}
             <div className="relative">
-              <div className="w-1 h-64 bg-gray-700 rounded-full">
+              <div className="w-1 h-64 bg-muted rounded-full">
                 <div
-                  className="w-1 bg-gradient-to-t from-purple-500 to-blue-500 rounded-full transition-all duration-500"
+                  className="w-1 bg-gradient-to-t from-primary to-primary/60 rounded-full transition-all duration-500"
                   style={{ height: `${((currentChapterIndex + 1) / totalChapters) * 100}%` }}
                 ></div>
               </div>
               
               {/* Current Position Indicator */}
               <div
-                className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-yellow-400 rounded-full border-2 border-gray-900 transition-all duration-500"
+                className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-accent rounded-full border-2 border-background transition-all duration-500"
                 style={{ top: `${(currentChapterIndex / (totalChapters - 1)) * 240}px` }}
               >
-                <div className="w-2 h-2 bg-yellow-200 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                <div className="w-2 h-2 bg-accent-foreground rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
               </div>
             </div>
 
@@ -303,14 +306,14 @@ export const LessonsPageClean: React.FC = () => {
               size="sm"
               onClick={handleNextChapter}
               disabled={currentChapterIndex === totalChapters - 1}
-              className="text-gray-400 hover:text-white p-2"
+              className="text-muted-foreground hover:text-foreground p-2"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>
 
             {/* Chapter Counter */}
-            <div className="text-center text-xs text-gray-400">
-              <div className="font-bold text-white">{currentChapterIndex + 1}</div>
+            <div className="text-center text-xs text-muted-foreground">
+              <div className="font-bold text-foreground">{currentChapterIndex + 1}</div>
               <div>of {totalChapters}</div>
             </div>
           </div>
@@ -318,7 +321,7 @@ export const LessonsPageClean: React.FC = () => {
 
         {/* Mobile Bottom Navigation */}
         <div className="lg:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30">
-          <div className="bg-gray-900/90 backdrop-blur-md border border-gray-700 rounded-full px-6 py-3 shadow-xl">
+          <div className="bg-card/90 backdrop-blur-md border border-border rounded-full px-6 py-3 shadow-xl">
             <div className="flex items-center gap-4">
               {/* Previous Button */}
               <Button
@@ -326,7 +329,7 @@ export const LessonsPageClean: React.FC = () => {
                 size="sm"
                 onClick={handlePreviousChapter}
                 disabled={currentChapterIndex === 0}
-                className="text-gray-400 hover:text-white p-2 rounded-full"
+                className="text-muted-foreground hover:text-foreground p-2 rounded-full"
               >
                 <ChevronUp className="h-5 w-5" />
               </Button>
@@ -336,7 +339,7 @@ export const LessonsPageClean: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowTableOfContents(true)}
-                className="bg-gray-800/80 border-gray-600 text-gray-300 hover:bg-gray-700 px-4 py-2 rounded-full"
+                className="bg-card/80 border-border text-muted-foreground hover:bg-muted px-4 py-2 rounded-full"
               >
                 <List className="h-4 w-4 mr-2" />
                 <span className="text-xs font-medium">{currentChapterIndex + 1}/{totalChapters}</span>
@@ -348,16 +351,16 @@ export const LessonsPageClean: React.FC = () => {
                 size="sm"
                 onClick={handleNextChapter}
                 disabled={currentChapterIndex === totalChapters - 1}
-                className="text-gray-400 hover:text-white p-2 rounded-full"
+                className="text-muted-foreground hover:text-foreground p-2 rounded-full"
               >
                 <ChevronDown className="h-5 w-5" />
               </Button>
             </div>
 
             {/* Mobile Progress Bar */}
-            <div className="mt-3 w-48 h-1 bg-gray-700 rounded-full">
+            <div className="mt-3 w-48 h-1 bg-muted rounded-full">
               <div
-                className="h-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-500"
+                className="h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all duration-500"
                 style={{ width: `${((currentChapterIndex + 1) / totalChapters) * 100}%` }}
               ></div>
             </div>
@@ -369,17 +372,17 @@ export const LessonsPageClean: React.FC = () => {
           <div className="container mx-auto px-4 lg:px-6 py-8 pb-24 lg:pb-8">
             <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-50 transform translate-y-4' : 'opacity-100 transform translate-y-0'}`}>
               {/* Chapter Header */}
-              <Card className="mb-6 lg:mb-8 bg-gradient-to-r from-gray-900 to-gray-800 border-2 border-purple-500/30">
+              <Card className="mb-6 lg:mb-8 bg-gradient-to-r from-card to-muted border-2 border-primary/30">
                 <CardContent className="p-4 lg:p-8">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <div className={`w-4 h-4 rounded-full ${getDifficultyColor(currentChapter.difficulty)}`}></div>
                       <div>
-                        <h2 className="text-3xl font-bold text-white mb-2">
+                        <h2 className="text-3xl font-bold text-foreground mb-2">
                           Chapter {currentChapter.number}
                         </h2>
-                        <h3 className="text-xl text-purple-300 mb-2">{currentChapter.title}</h3>
-                        <p className="text-gray-400">{currentChapter.description}</p>
+                        <h3 className="text-xl text-primary mb-2">{currentChapter.title}</h3>
+                        <p className="text-muted-foreground">{currentChapter.description}</p>
                       </div>
                     </div>
                     
@@ -387,7 +390,7 @@ export const LessonsPageClean: React.FC = () => {
                       <Badge className={`${getDifficultyColor(currentChapter.difficulty)} text-white font-bold mb-2`}>
                         {currentChapter.difficulty.toUpperCase()}
                       </Badge>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-muted-foreground">
                         {currentChapter.estimatedTime} minutes
                       </div>
                     </div>
@@ -396,14 +399,14 @@ export const LessonsPageClean: React.FC = () => {
                   {/* Chapter Progress */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Chapter Progress</span>
-                      <span className="text-purple-300 font-bold">
+                      <span className="text-muted-foreground">Chapter Progress</span>
+                      <span className="text-primary font-bold">
                         {currentChapter.completedLessons}/{currentChapter.totalLessons} lessons
                       </span>
                     </div>
-                    <Progress 
-                      value={(currentChapter.completedLessons / currentChapter.totalLessons) * 100} 
-                      className="h-3" 
+                    <Progress
+                      value={(currentChapter.completedLessons / currentChapter.totalLessons) * 100}
+                      className="h-3"
                     />
                   </div>
                 </CardContent>
@@ -412,13 +415,13 @@ export const LessonsPageClean: React.FC = () => {
               {/* Lessons Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {currentChapter.lessons.map((lesson, index) => (
-                  <Card 
+                  <Card
                     key={lesson.id}
                     className={`
                       group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl
-                      bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 
-                      hover:border-purple-500/50 hover:shadow-purple-500/20
-                      ${lesson.isRecommended ? 'ring-2 ring-yellow-500/30' : ''}
+                      bg-gradient-to-br from-card to-muted border border-border
+                      hover:border-primary/50 hover:shadow-primary/20
+                      ${lesson.isRecommended ? 'ring-2 ring-accent/30' : ''}
                       ${lesson.status === 'locked' ? 'opacity-60 cursor-not-allowed' : ''}
                     `}
                     onClick={() => lesson.status !== 'locked' && handleLessonSelect(lesson)}
@@ -428,16 +431,16 @@ export const LessonsPageClean: React.FC = () => {
                         <div className="flex items-center gap-3">
                           {getStatusIcon(lesson.status)}
                           <div>
-                            <CardTitle className="text-lg text-white group-hover:text-purple-300 transition-colors">
+                            <CardTitle className="text-lg text-foreground group-hover:text-primary transition-colors">
                               {lesson.title}
                               {lesson.isRecommended && (
-                                <Star className="h-4 w-4 text-yellow-400 fill-current inline ml-2" />
+                                <Star className="h-4 w-4 text-accent fill-current inline ml-2" />
                               )}
                             </CardTitle>
                           </div>
                         </div>
                       </div>
-                      <CardDescription className="text-gray-400 text-sm">
+                      <CardDescription className="text-muted-foreground text-sm">
                         {lesson.description}
                       </CardDescription>
                     </CardHeader>
@@ -445,10 +448,10 @@ export const LessonsPageClean: React.FC = () => {
                     <CardContent>
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex gap-2">
-                          <Badge variant="outline" className="text-xs text-gray-300">
+                          <Badge variant="outline" className="text-xs text-muted-foreground">
                             {lesson.duration}min
                           </Badge>
-                          <Badge variant="outline" className="text-xs text-gray-300">
+                          <Badge variant="outline" className="text-xs text-muted-foreground">
                             {lesson.xpReward}XP
                           </Badge>
                         </div>
@@ -481,15 +484,15 @@ export const LessonsPageClean: React.FC = () => {
 
       {/* Table of Contents Overlay */}
       {showTableOfContents && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-gray-900 rounded-lg border border-gray-700 w-full max-w-4xl max-h-[80vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-gray-700">
-              <h2 className="text-2xl font-bold text-white">Table of Contents</h2>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-card rounded-lg border border-border w-full max-w-4xl max-h-[80vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <h2 className="text-2xl font-bold text-foreground">Table of Contents</h2>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowTableOfContents(false)}
-                className="text-gray-400 hover:text-white"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -502,26 +505,26 @@ export const LessonsPageClean: React.FC = () => {
                     key={chapter.id}
                     className={`
                       cursor-pointer transition-all duration-200 hover:scale-105
-                      ${index === currentChapterIndex ? 'ring-2 ring-purple-500 bg-purple-900/20' : 'bg-gray-800'}
-                      border-gray-700 hover:border-purple-500/50
+                      ${index === currentChapterIndex ? 'ring-2 ring-primary bg-primary/20' : 'bg-card'}
+                      border-border hover:border-primary/50
                     `}
                     onClick={() => handleChapterSelect(index)}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3 mb-2">
                         <div className={`w-3 h-3 rounded-full ${getDifficultyColor(chapter.difficulty)}`}></div>
-                        <span className="text-white font-bold">Ch. {chapter.number}</span>
+                        <span className="text-foreground font-bold">Ch. {chapter.number}</span>
                         {index === currentChapterIndex && (
-                          <Badge className="bg-purple-500 text-white text-xs">CURRENT</Badge>
+                          <Badge className="bg-primary text-primary-foreground text-xs">CURRENT</Badge>
                         )}
                       </div>
-                      <h4 className="text-sm font-medium text-white mb-1">{chapter.title}</h4>
-                      <div className="text-xs text-gray-400">
+                      <h4 className="text-sm font-medium text-foreground mb-1">{chapter.title}</h4>
+                      <div className="text-xs text-muted-foreground">
                         {chapter.completedLessons}/{chapter.totalLessons} lessons
                       </div>
-                      <Progress 
-                        value={(chapter.completedLessons / chapter.totalLessons) * 100} 
-                        className="h-1 mt-2" 
+                      <Progress
+                        value={(chapter.completedLessons / chapter.totalLessons) * 100}
+                        className="h-1 mt-2"
                       />
                     </CardContent>
                   </Card>

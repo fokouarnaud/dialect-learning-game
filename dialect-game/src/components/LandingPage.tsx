@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from './theme/ThemeToggleSimple';
+import { useNavigate } from 'react-router-dom';
 
 // Types pour les props du composant
 export interface LandingPageProps {
@@ -260,20 +262,61 @@ const Footer: React.FC = () => {
 
 // Composant principal LandingPage
 export const LandingPage: React.FC<LandingPageProps> = ({ className, onPlayNow, onLearnMore }) => {
+  const navigate = useNavigate();
+
   return (
-    <div 
+    <div
       className={cn("min-h-screen bg-background text-foreground", className)}
       role="main"
       aria-label="Dialect Learning Game Landing Page"
-    >      {/* Header/Navigation sera ajouté plus tard */}
+    >
+      {/* Header with Navigation and Theme Toggle */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Logo/Brand */}
+            <div className="flex items-center gap-2">
+              <div className="text-2xl">🎮</div>
+              <span className="text-xl font-bold text-foreground">Dialect Game</span>
+            </div>
+            
+            {/* Navigation */}
+            <nav className="hidden md:flex items-center gap-6">
+              <Button variant="ghost" onClick={() => navigate('/lessons')}>
+                Lessons
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/game')}>
+                Play Game
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+                Dashboard
+              </Button>
+            </nav>
+            
+            {/* Theme Toggle */}
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button
+                className="hidden sm:flex"
+                onClick={() => navigate('/lessons')}
+              >
+                Start Learning
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
       
-      {/* Sections principales */}
-      <HeroSection onPlayNow={onPlayNow} onLearnMore={onLearnMore} />
-      <FeaturesSection />
-      <GamePreviewSection />
-      
-      {/* Footer */}
-      <Footer />
+      {/* Add padding to account for fixed header */}
+      <div className="pt-20">
+        {/* Sections principales */}
+        <HeroSection onPlayNow={onPlayNow} onLearnMore={onLearnMore} />
+        <FeaturesSection />
+        <GamePreviewSection />
+        
+        {/* Footer */}
+        <Footer />
+      </div>
       
       {/* Accessibilité - Screen Reader */}
       <div className="sr-only">

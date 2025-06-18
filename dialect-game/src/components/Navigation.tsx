@@ -10,6 +10,7 @@ import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
 import { cn } from '@/lib/utils';
 import useNavigation from '../hooks/useNavigation';
+import { ThemeToggle } from './theme/ThemeToggleSimple';
 
 interface NavigationProps {
   showBackButton?: boolean;
@@ -115,6 +116,11 @@ export const FixedNavigation: React.FC<NavigationProps> = (props) => {
       
       {/* Quick actions on the right */}
       <div className="flex gap-2">
+        {/* Theme Toggle */}
+        <div className="glass p-1 rounded-md">
+          <ThemeToggle />
+        </div>
+        
         <Button
           asChild
           variant="outline"
