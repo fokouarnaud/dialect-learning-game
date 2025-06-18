@@ -143,33 +143,36 @@ export const LessonsPageClean: React.FC = () => {
   const totalChapters = chapters.length;
 
   const handlePreviousChapter = () => {
-    if (currentChapterIndex > 0) {
+    if (currentChapterIndex > 0 && !isTransitioning) {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentChapterIndex(prev => prev - 1);
+        setCurrentChapterIndex(prev => Math.max(0, prev - 1));
         setIsTransitioning(false);
       }, 150);
     }
   };
 
   const handleNextChapter = () => {
-    if (currentChapterIndex < totalChapters - 1) {
+    if (currentChapterIndex < totalChapters - 1 && !isTransitioning) {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentChapterIndex(prev => prev + 1);
+        setCurrentChapterIndex(prev => Math.min(totalChapters - 1, prev + 1));
         setIsTransitioning(false);
       }, 150);
     }
   };
 
   const handleChapterSelect = (index: number) => {
-    if (index !== currentChapterIndex) {
+    if (index !== currentChapterIndex && index >= 0 && index < totalChapters && !isTransitioning) {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentChapterIndex(index);
+        setCurrentChapterIndex(Math.max(0, Math.min(totalChapters - 1, index)));
         setIsTransitioning(false);
         setShowTableOfContents(false);
       }, 150);
+    } else {
+      // Si même chapitre, juste fermer la table des matières
+      setShowTableOfContents(false);
     }
   };
 
@@ -205,16 +208,20 @@ export const LessonsPageClean: React.FC = () => {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (showTableOfContents) return;
+      if (showTableOfContents || isTransitioning) return;
       
       switch (event.key) {
         case 'ArrowUp':
           event.preventDefault();
-          handlePreviousChapter();
+          if (currentChapterIndex > 0) {
+            handlePreviousChapter();
+          }
           break;
         case 'ArrowDown':
           event.preventDefault();
-          handleNextChapter();
+          if (currentChapterIndex < totalChapters - 1) {
+            handleNextChapter();
+          }
           break;
         case 'Escape':
           setShowTableOfContents(false);
@@ -224,7 +231,7 @@ export const LessonsPageClean: React.FC = () => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [currentChapterIndex, showTableOfContents]);
+  }, [currentChapterIndex, showTableOfContents, isTransitioning, totalChapters]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted relative">
