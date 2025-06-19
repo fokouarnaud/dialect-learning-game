@@ -170,7 +170,7 @@ export const LessonCompleteInterface: React.FC = () => {
   const nextAction = getNextAction();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-background/95 dark:from-background dark:via-background dark:to-muted/10">
       
       {/* Minimal Header */}
       <header className="bg-background/98 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
@@ -203,131 +203,162 @@ export const LessonCompleteInterface: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-lg mx-auto space-y-6">
           
-          {/* Result Hero */}
-          <Card className={`text-center ${
-            isSuccess 
-              ? 'bg-gradient-to-br from-accent/20 to-primary/20 border-accent/30' 
-              : 'bg-gradient-to-br from-destructive/20 to-orange-500/20 border-destructive/30'
-          } border-2 ${showCelebration ? 'animate-pulse' : ''}`}>
-            <CardContent className="p-8">
-              <div className="mb-6">
+          {/* Result Hero - Zen Professional Design */}
+          <Card className={`text-center overflow-hidden ${
+            isSuccess
+              ? 'bg-gradient-to-br from-accent/10 to-primary/10 border-accent/20'
+              : 'bg-gradient-to-br from-destructive/10 to-orange-500/10 border-destructive/20'
+          } border-2 transition-all duration-700 ease-out ${showCelebration ? 'shadow-lg shadow-accent/20 scale-[1.02]' : 'shadow-md'}`}>
+            <CardContent className="p-6 sm:p-8 relative">
+              {/* Subtle background glow effect */}
+              {isSuccess && showCelebration && (
+                <div className="absolute inset-0 bg-gradient-to-r from-accent/5 via-primary/5 to-accent/5 animate-gradient-x opacity-60"></div>
+              )}
+              
+              <div className="relative z-10 mb-6">
                 {isSuccess ? (
-                  <div className="w-20 h-20 mx-auto bg-accent rounded-full flex items-center justify-center mb-4">
-                    <Trophy className="h-10 w-10 text-accent-foreground" />
+                  <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-br from-accent to-accent/80 rounded-full flex items-center justify-center mb-4 transition-all duration-500 ease-out ${
+                    showCelebration ? 'scale-110 shadow-lg shadow-accent/30' : 'scale-100'
+                  }`}>
+                    <Trophy className={`h-8 w-8 sm:h-10 sm:w-10 text-accent-foreground transition-transform duration-300 ${
+                      showCelebration ? 'scale-110' : 'scale-100'
+                    }`} />
                   </div>
                 ) : (
-                  <div className="w-20 h-20 mx-auto bg-destructive rounded-full flex items-center justify-center mb-4">
-                    <XCircle className="h-10 w-10 text-destructive-foreground" />
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mb-4 transition-all duration-300 ease-out">
+                    <RotateCcw className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                   </div>
                 )}
               </div>
               
-              <h1 className="text-3xl font-bold text-foreground mb-3">
+              <h1 className={`text-2xl sm:text-3xl font-bold text-foreground mb-3 transition-all duration-500 ${
+                showCelebration ? 'scale-105' : 'scale-100'
+              }`}>
                 {isSuccess ? 'Well Done!' : 'Keep Practicing!'}
               </h1>
               
-              <p className="text-lg text-muted-foreground mb-6">
+              <p className="text-base sm:text-lg text-muted-foreground mb-6 transition-opacity duration-700">
                 {isSuccess ? 'You mastered this lesson' : 'Every attempt makes you better'}
               </p>
 
-              {/* Key Stats - Simplified */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-card/50 rounded-lg p-4">
+              {/* Key Stats - Zen Design */}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6">
+                <div className={`bg-card/60 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-border/50 transition-all duration-500 hover:bg-card/80 ${
+                  showCelebration ? 'animate-soft-scale' : ''
+                }`} style={{ animationDelay: '0.2s' }}>
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    <span className="text-sm text-muted-foreground">Accuracy</span>
+                    <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary transition-colors duration-300" />
+                    <span className="text-xs sm:text-sm text-muted-foreground">Accuracy</span>
                   </div>
-                  <div className="text-2xl font-bold text-foreground">
+                  <div className="text-xl sm:text-2xl font-bold text-foreground">
                     {result.accuracy}%
                   </div>
                 </div>
                 
-                <div className="bg-card/50 rounded-lg p-4">
+                <div className={`bg-card/60 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-border/50 transition-all duration-500 hover:bg-card/80 ${
+                  showCelebration ? 'animate-soft-scale' : ''
+                }`} style={{ animationDelay: '0.4s' }}>
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <Zap className="h-5 w-5 text-accent" />
-                    <span className="text-sm text-muted-foreground">XP Earned</span>
+                    <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-accent transition-colors duration-300" />
+                    <span className="text-xs sm:text-sm text-muted-foreground">XP Earned</span>
                   </div>
-                  <div className="text-2xl font-bold text-foreground">
+                  <div className="text-xl sm:text-2xl font-bold text-foreground">
                     +{result.xpEarned}
                   </div>
                 </div>
               </div>
 
-              {/* Progress in Chapter */}
-              <div className="bg-card/30 rounded-lg p-4 mb-6">
-                <div className="flex justify-between items-center mb-2">
+              {/* Progress in Chapter - Zen Design */}
+              <div className={`bg-card/40 backdrop-blur-sm rounded-xl p-4 mb-6 border border-border/30 transition-all duration-700 ${
+                showCelebration ? 'bg-card/60' : ''
+              }`}>
+                <div className="flex justify-between items-center mb-3">
                   <span className="text-sm text-muted-foreground">Chapter Progress</span>
                   <span className="text-sm font-medium text-foreground">
                     {progression.progress.completed}/{progression.progress.total} lessons
                   </span>
                 </div>
-                <Progress 
-                  value={(progression.progress.completed / progression.progress.total) * 100} 
-                  className="h-2"
+                <Progress
+                  value={(progression.progress.completed / progression.progress.total) * 100}
+                  className="h-2 transition-all duration-500"
                 />
               </div>
 
-              {/* Maximum 2 Action Buttons - UI/UX 2025 Best Practice */}
+              {/* Professional Action Buttons - Zen Style */}
               <div className="space-y-3">
                 <Button
                   onClick={nextAction.primary.action}
-                  className={`w-full py-4 text-lg rounded-full font-medium ${
-                    isSuccess 
-                      ? 'bg-accent hover:bg-accent/80 text-accent-foreground'
-                      : 'bg-primary hover:bg-primary/80 text-primary-foreground'
-                  }`}
+                  className={`w-full py-3 sm:py-4 text-base sm:text-lg rounded-2xl font-medium transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${
+                    isSuccess
+                      ? 'bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent/80 text-accent-foreground shadow-lg shadow-accent/20'
+                      : 'bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground shadow-lg shadow-primary/20'
+                  } ${showCelebration ? 'animate-zen-glow' : ''}`}
                 >
-                  {nextAction.primary.icon}
-                  <span className="ml-2">{nextAction.primary.label}</span>
+                  <span className="flex items-center justify-center gap-2">
+                    {nextAction.primary.icon}
+                    {nextAction.primary.label}
+                  </span>
                 </Button>
                 
                 <Button
                   onClick={nextAction.secondary.action}
                   variant="outline"
-                  className="w-full py-3 text-base rounded-full font-medium"
+                  className="w-full py-3 text-base rounded-2xl font-medium transition-all duration-300 transform hover:scale-[1.01] active:scale-[0.99] border-border/50 hover:border-border hover:bg-muted/50 backdrop-blur-sm"
                 >
-                  {nextAction.secondary.icon}
-                  <span className="ml-2">{nextAction.secondary.label}</span>
+                  <span className="flex items-center justify-center gap-2">
+                    {nextAction.secondary.icon}
+                    {nextAction.secondary.label}
+                  </span>
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Achievement Notification - Only if significant */}
+          {/* Achievement Notification - Zen Professional */}
           {isSuccess && result.accuracy >= 90 && (
-            <Card className="bg-gradient-to-r from-accent/10 to-primary/10 border border-accent/30">
-              <CardContent className="p-4">
+            <Card className={`bg-gradient-to-r from-accent/5 via-primary/5 to-accent/5 border border-accent/20 backdrop-blur-sm transition-all duration-700 transform ${
+              showCelebration ? 'scale-105 shadow-lg shadow-accent/10' : 'scale-100'
+            }`}>
+              <CardContent className="p-4 sm:p-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
+                  <div className={`w-12 h-12 bg-gradient-to-br from-accent to-accent/80 rounded-full flex items-center justify-center transition-transform duration-500 ${
+                    showCelebration ? 'scale-110 rotate-12' : 'scale-100'
+                  }`}>
                     <Star className="h-6 w-6 text-accent-foreground fill-current" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-foreground">Perfect Pronunciation!</h3>
                     <p className="text-sm text-muted-foreground">90%+ accuracy achieved</p>
                   </div>
-                  <CheckCircle2 className="h-5 w-5 text-accent" />
+                  <CheckCircle2 className={`h-5 w-5 text-accent transition-transform duration-300 ${
+                    showCelebration ? 'scale-110' : 'scale-100'
+                  }`} />
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Celebration Particles */}
+          {/* Zen Celebration Effect - Subtle and Professional */}
           {showCelebration && (
-            <div className="fixed inset-0 pointer-events-none z-40">
-              {[...Array(15)].map((_, i) => (
+            <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
+              {/* Gentle floating sparkles */}
+              {[...Array(8)].map((_, i) => (
                 <div
                   key={i}
-                  className="absolute animate-bounce text-2xl"
+                  className="absolute opacity-0 animate-gentle-float"
                   style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 2}s`,
-                    animationDuration: '2s'
+                    left: `${20 + Math.random() * 60}%`,
+                    top: `${20 + Math.random() * 60}%`,
+                    animationDelay: `${Math.random() * 1.5}s`,
+                    animationDuration: '3s'
                   }}
                 >
-                  {['🎉', '⭐', '🏆', '✨'][Math.floor(Math.random() * 4)]}
+                  <div className="w-2 h-2 bg-accent/60 rounded-full shadow-lg"></div>
                 </div>
               ))}
+              
+              {/* Elegant gradient waves */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent/5 to-transparent animate-gentle-wave opacity-40"></div>
             </div>
           )}
         </div>
