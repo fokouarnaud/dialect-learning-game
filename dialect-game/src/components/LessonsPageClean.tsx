@@ -29,6 +29,17 @@ import type { Lesson } from './LessonSelector';
 import NavigationGuard from './NavigationGuard';
 import { ThemeToggle } from './theme/ThemeToggleSimple';
 
+// Single parallax background image - Large educational landscape
+const PARALLAX_BACKGROUND_IMAGE = 'https://images.pexels.com/photos/289737/pexels-photo-289737.jpeg?auto=compress&cs=tinysrgb&w=2560&h=1440';
+
+// Calculate vertical scroll position based on chapter progression
+const getParallaxScrollPosition = (chapterIndex: number, totalChapters: number): number => {
+  // Image height is larger than viewport, we scroll through it progressively
+  // Each chapter represents a portion of the vertical scroll through the image
+  const scrollPercentage = (chapterIndex / (totalChapters - 1)) * 100;
+  return Math.min(scrollPercentage, 100); // 0% to 100% of image height
+};
+
 interface Chapter {
   id: string;
   number: number;
@@ -144,15 +155,27 @@ export const LessonsPageClean: React.FC = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showChapterInfo, setShowChapterInfo] = useState(true);
+  
+  // Parallax state - smooth progressive movement
+  const [parallaxOffset, setParallaxOffset] = useState(0);
+  const [targetParallaxOffset, setTargetParallaxOffset] = useState(0);
 
   const currentChapter = chapters[currentChapterIndex];
   const totalChapters = chapters.length;
+  
+  // Calculate background position based on chapter progress
+  const getBackgroundPosition = (chapterIndex: number): number => {
+    return getParallaxScrollPosition(chapterIndex, totalChapters);
+  };
 
   const handlePreviousChapter = () => {
     if (currentChapterIndex > 0 && !isTransitioning) {
       setIsTransitioning(true);
+      const newIndex = Math.max(0, currentChapterIndex - 1);
+      setTargetParallaxOffset(getBackgroundPosition(newIndex));
+      
       setTimeout(() => {
-        setCurrentChapterIndex(prev => Math.max(0, prev - 1));
+        setCurrentChapterIndex(newIndex);
         setIsTransitioning(false);
       }, 150);
     }
@@ -161,8 +184,11 @@ export const LessonsPageClean: React.FC = () => {
   const handleNextChapter = () => {
     if (currentChapterIndex < totalChapters - 1 && !isTransitioning) {
       setIsTransitioning(true);
+      const newIndex = Math.min(totalChapters - 1, currentChapterIndex + 1);
+      setTargetParallaxOffset(getBackgroundPosition(newIndex));
+      
       setTimeout(() => {
-        setCurrentChapterIndex(prev => Math.min(totalChapters - 1, prev + 1));
+        setCurrentChapterIndex(newIndex);
         setIsTransitioning(false);
       }, 150);
     }
@@ -171,14 +197,15 @@ export const LessonsPageClean: React.FC = () => {
   const handleChapterSelect = (index: number) => {
     if (index !== currentChapterIndex && index >= 0 && index < totalChapters && !isTransitioning) {
       setIsTransitioning(true);
+      const newIndex = Math.max(0, Math.min(totalChapters - 1, index));
+      setTargetParallaxOffset(getBackgroundPosition(newIndex));
+      
       setTimeout(() => {
-        setCurrentChapterIndex(Math.max(0, Math.min(totalChapters - 1, index)));
+        setCurrentChapterIndex(newIndex);
         setIsTransitioning(false);
         setShowTableOfContents(false);
-        // Garder les détails du chapitre visibles après sélection
       }, 150);
     } else {
-      // Fermer seulement la table des matières, garder chapter info
       setShowTableOfContents(false);
     }
   };
@@ -211,6 +238,18 @@ export const LessonsPageClean: React.FC = () => {
     }
   };
 
+  // Direct parallax update for CSS transition
+  useEffect(() => {
+    setParallaxOffset(targetParallaxOffset);
+  }, [targetParallaxOffset]);
+
+  // Initialize background position
+  useEffect(() => {
+    const initialOffset = getBackgroundPosition(currentChapterIndex);
+    setParallaxOffset(initialOffset);
+    setTargetParallaxOffset(initialOffset);
+  }, []);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -233,7 +272,6 @@ export const LessonsPageClean: React.FC = () => {
           if (showTableOfContents) {
             setShowTableOfContents(false);
           } else {
-            // Toggle chapter info seulement si table of contents n'est pas ouverte
             setShowChapterInfo(!showChapterInfo);
           }
           break;
@@ -245,9 +283,26 @@ export const LessonsPageClean: React.FC = () => {
   }, [currentChapterIndex, showTableOfContents, isTransitioning, totalChapters]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted relative">
-      {/* Minimal Header - UI/UX Best Practices */}
-      <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-40">
+    <div className="min-h-screen relative">
+      {/* Single Large Background Image with smooth transition animation */}
+      <div
+        className="fixed inset-0 w-full h-[300vh]"
+        style={{
+          backgroundImage: `url(${PARALLAX_BACKGROUND_IMAGE})`,
+          backgroundPosition: `center ${parallaxOffset}%`,
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          filter: 'brightness(0.6) contrast(1.2)',
+          transition: 'background-position 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
+          zIndex: -1
+        }}
+      />
+
+      {/* Transparent overlay container - NO background to reveal image */}
+      <div className="min-h-screen">
+        
+        {/* Minimal Header with normal transparency */}
+        <header className="bg-background/80 backdrop-blur-sm border-b border-border/30 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Left - Back Navigation */}
@@ -331,9 +386,9 @@ export const LessonsPageClean: React.FC = () => {
         </div>
       </header>
 
-      {/* Chapter Info - Optimized Display (Default Shown) */}
+      {/* Chapter Info with normal transparency */}
       {showChapterInfo && (
-        <div className="bg-muted/30 border-b border-border">
+        <div className="bg-background/70 backdrop-blur-sm border-b border-border/30">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
@@ -458,7 +513,7 @@ export const LessonsPageClean: React.FC = () => {
                     key={lesson.id}
                     className={`
                       group cursor-pointer transition-all duration-200 hover:bg-muted/30
-                      bg-card border border-border hover:border-primary/50
+                      bg-card/80 backdrop-blur-sm border border-border hover:border-primary/50
                       ${lesson.isRecommended ? 'ring-1 ring-accent/30' : ''}
                       ${lesson.status === 'locked' ? 'opacity-60 cursor-not-allowed' : ''}
                     `}
@@ -523,7 +578,7 @@ export const LessonsPageClean: React.FC = () => {
                     key={lesson.id}
                     className={`
                       group cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg
-                      bg-card border border-border hover:border-primary/50 hover:shadow-primary/10
+                      bg-card/80 backdrop-blur-sm border border-border hover:border-primary/50 hover:shadow-primary/10
                       ${lesson.isRecommended ? 'ring-1 ring-accent/30' : ''}
                       ${lesson.status === 'locked' ? 'opacity-60 cursor-not-allowed' : ''}
                     `}
@@ -578,9 +633,9 @@ export const LessonsPageClean: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation - Minimal */}
+      {/* Mobile Navigation with normal transparency */}
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 md:hidden">
-        <div className="bg-card/95 backdrop-blur-md border border-border rounded-full px-4 py-2 shadow-lg">
+        <div className="bg-card/90 backdrop-blur-md border border-border rounded-full px-4 py-2 shadow-lg">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -688,6 +743,8 @@ export const LessonsPageClean: React.FC = () => {
           isOpen={showNavigationGuard}
         />
       )}
+      
+      </div> {/* Fermeture de la div transparente */}
     </div>
   );
 };

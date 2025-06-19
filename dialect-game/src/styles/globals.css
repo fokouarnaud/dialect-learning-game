@@ -92,7 +92,7 @@
   }
   
   body {
-    background-color: hsl(var(--background));
+    background-color: transparent;
     color: hsl(var(--foreground));
     font-family: var(--font-body), system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -200,7 +200,7 @@
   /* Custom game components */
   .game-layout {
     min-height: 100vh;
-    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--muted)));
+    background: transparent;
   }
   
   .glass-container {
