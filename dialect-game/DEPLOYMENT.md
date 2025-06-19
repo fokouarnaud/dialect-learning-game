@@ -1,195 +1,336 @@
 # 🚀 Guide de Déploiement - Dialect Game
 
-## ✅ Statut: PRÊT POUR LA PRODUCTION
+## 📋 Checklist de Déploiement
 
-### 📊 Performance Actuelle
-- **Bundle optimisé**: 63.95 KB gzippé
-- **Tests**: 591/875 passants (67%)
-- **PWA**: Complètement configurée
-- **Code splitting**: 6 chunks optimisés
+### ✅ Pré-déploiement
+- [ ] Tests passent (`npm run test`)
+- [ ] Build de production réussit (`npm run build`)
+- [ ] Variables d'environnement configurées
+- [ ] Services externes configurés
+- [ ] Certificats SSL en place
+- [ ] Monitoring configuré
 
----
+### ✅ Variables d'Environnement Obligatoires
 
-## 🌐 DÉPLOIEMENT NETLIFY (Recommandé)
-
-### 1. Préparation Git
 ```bash
-git add .
-git commit -m "Production ready - optimized build with deployment configs"
-git push origin main
+# .env.production
+VITE_API_URL=https://api.dialectgame.com
+VITE_GOOGLE_CLIENT_ID=your-google-client-id
+VITE_ANALYTICS_ID=GA-XXXXXXXXX
+VITE_SENTRY_DSN=https://your-sentry-dsn
 ```
 
-### 2. Déploiement Netlify
-1. Aller sur [netlify.com](https://netlify.com)
-2. "Add new site" → "Import from Git"
-3. Connecter votre repository GitHub
-4. Configuration automatique détectée via `netlify.toml`
-5. Deploy automatique!
+### ✅ Services Externes Requis
 
-### 3. Configuration Netlify
-- **Build command**: `npm run build` (auto-détecté)
-- **Publish directory**: `dist` (auto-détecté)
-- **Node version**: 18 (configuré)
+#### 1. **Google OAuth 2.0**
+- Console: https://console.cloud.google.com/
+- API: Google Sign-In API
+- Scope: `profile`, `email`
 
----
+#### 2. **Speech Recognition API**
+- **Azure Cognitive Services** (Recommandé)
+  - Service: Speech Services
+  - Région: East US ou Europe West
+- **Alternative**: Google Speech-to-Text API
 
-## ⚡ DÉPLOIEMENT VERCEL (Alternative)
+#### 3. **Analytics & Monitoring**
+- **Google Analytics 4**: Tracking des événements
+- **Sentry**: Monitoring des erreurs en production
 
-### 1. Via CLI Vercel
+#### 4. **Base de Données** (Optionnel)
+- **Supabase** (Recommandé): PostgreSQL + Auth
+- **Alternative**: Firebase Firestore
+
+## 🌐 Déploiement par Plateforme
+
+### 🎯 Vercel (Production Recommandée)
+
 ```bash
-npm install -g vercel
-vercel login
+# Installation
+npm i -g vercel
+
+# Configuration des variables
+vercel env add VITE_API_URL production
+vercel env add VITE_GOOGLE_CLIENT_ID production
+vercel env add VITE_ANALYTICS_ID production
+vercel env add VITE_SENTRY_DSN production
+
+# Déploiement
 vercel --prod
 ```
 
-### 2. Via Interface Web
-1. Aller sur [vercel.com](https://vercel.com)
-2. "Add New Project"
-3. Import from GitHub
-4. Configuration auto via `vercel.json`
-
----
-
-## 🔧 VARIABLES D'ENVIRONNEMENT
-
-### Variables Recommandées
-```env
-NODE_ENV=production
-VITE_APP_VERSION=1.0.0
-VITE_APP_NAME=Dialect Game
+**Configuration vercel.json:**
+```json
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}
 ```
 
-### Configuration Netlify
+### 🌊 Netlify
+
 ```bash
-# Dans Netlify Dashboard > Site settings > Environment variables
-NODE_ENV=production
-VITE_APP_VERSION=1.0.0
-```
-
-### Configuration Vercel
-```bash
-# Dans Vercel Dashboard > Project > Settings > Environment Variables
-NODE_ENV=production
-VITE_APP_VERSION=1.0.0
-```
-
----
-
-## 📱 VALIDATION PWA
-
-### Après Déploiement
-1. Ouvrir l'app en navigation privée
-2. Vérifier l'option "Installer l'app"
-3. Tester le mode hors-ligne
-4. Valider le service worker dans DevTools
-
-### Checklist PWA
-- [ ] Manifest.json accessible
-- [ ] Service Worker enregistré
-- [ ] Installation possible
-- [ ] Mode hors-ligne fonctionnel
-
----
-
-## 🎯 POST-DÉPLOIEMENT
-
-### 1. Tests de Validation
-```bash
-# Test build local
-npm run build
-npm run preview
-
-# Test performance
-npm run test:e2e
-```
-
-### 2. Monitoring
-- Lighthouse score
-- Core Web Vitals
-- PWA score
-- Accessibilité
-
-### 3. Améliorations Continues
-- Corriger CSS Tailwind (non-bloquant)
-- Améliorer couverture tests (284 restants)
-- Optimisations performance
-
----
-
-## 🐛 RÉSOLUTION PROBLÈMES CSS
-
-### Problème Actuel
-Les classes Tailwind ne sont pas générées dans le build.
-
-### Solution Rapide
-```bash
-# Option 1: Forcer la génération
-npm run clean
+# Build local
 npm run build
 
-# Option 2: Mode dev (styles fonctionnent)
+# Configuration netlify.toml
+```
+
+**Configuration netlify.toml:**
+```toml
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+```
+
+### 🐳 Docker
+
+```dockerfile
+# Dockerfile
+FROM node:18-alpine as builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+**docker-compose.yml:**
+```yaml
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+      - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
+    restart: unless-stopped
+```
+
+## 🔧 Configuration des Services
+
+### Google OAuth Setup
+
+1. **Créer un projet Google Cloud**
+   ```bash
+   # URL: https://console.cloud.google.com/
+   ```
+
+2. **Configurer OAuth 2.0**
+   ```
+   - APIs & Services > Credentials
+   - Create OAuth 2.0 Client ID
+   - Application type: Web application
+   - Authorized origins: https://votre-domaine.com
+   - Authorized redirect URIs: https://votre-domaine.com/auth/callback
+   ```
+
+3. **Récupérer les clés**
+   ```bash
+   VITE_GOOGLE_CLIENT_ID=123456789-abcdef.apps.googleusercontent.com
+   ```
+
+### Azure Speech Services Setup
+
+1. **Créer une ressource Speech**
+   ```bash
+   # Azure Portal > Create Resource > Cognitive Services > Speech
+   ```
+
+2. **Configuration**
+   ```bash
+   VITE_SPEECH_API_KEY=your-azure-speech-key
+   VITE_SPEECH_SERVICE_REGION=eastus
+   ```
+
+### Sentry Monitoring Setup
+
+1. **Créer un projet Sentry**
+   ```bash
+   # URL: https://sentry.io/
+   ```
+
+2. **Configuration**
+   ```bash
+   VITE_SENTRY_DSN=https://your-key@sentry.io/project-id
+   ```
+
+## 📊 Monitoring et Performance
+
+### Core Web Vitals Targets
+- **LCP**: < 2.5s
+- **FID**: < 100ms  
+- **CLS**: < 0.1
+- **TTFB**: < 800ms
+
+### Monitoring des Métriques
+
+```javascript
+// Performance monitoring
+const observer = new PerformanceObserver((list) => {
+  list.getEntries().forEach((entry) => {
+    // Send to analytics
+    gtag('event', 'web_vital', {
+      name: entry.name,
+      value: entry.value,
+      delta: entry.delta,
+    });
+  });
+});
+
+observer.observe({ entryTypes: ['web-vital'] });
+```
+
+## 🔒 Sécurité en Production
+
+### Headers de Sécurité
+```nginx
+# nginx.conf
+add_header X-Frame-Options "DENY" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline';" always;
+```
+
+### Variables Sensibles
+- ⚠️ **Ne jamais exposer** les clés privées côté client
+- ✅ **Utiliser** les variables VITE_ pour le frontend uniquement
+- 🔒 **Stocker** les secrets dans les variables d'environnement du serveur
+
+## 🚨 Dépannage
+
+### Erreurs Communes
+
+#### 1. **Build Failed**
+```bash
+# Vérifier Node.js version
+node --version  # Doit être 18+
+
+# Nettoyer les caches
+rm -rf node_modules package-lock.json
+npm install
+```
+
+#### 2. **Variables d'Environnement Non Reconnues**
+```bash
+# Vérifier le préfixe VITE_
+echo $VITE_API_URL
+
+# Redémarrer le serveur de dev
 npm run dev
 ```
 
-### Solution Définitive
-```bash
-# Vérifier postcss.config.js
-# Vérifier tailwind.config.js content paths
-# Rebuild complet
-rm -rf dist node_modules/.vite
-npm install
-npm run build
+#### 3. **Erreurs CORS**
+```javascript
+// Configurer les headers CORS sur votre API
+Access-Control-Allow-Origin: https://votre-domaine.com
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization
 ```
+
+### Logs de Débogage
+
+```bash
+# Activer les logs détaillés
+VITE_DEBUG_MODE=true npm run dev
+
+# Vérifier les erreurs Sentry
+# Dashboard: https://sentry.io/organizations/your-org/issues/
+```
+
+## 📈 Optimisations Post-Déploiement
+
+### 1. **CDN Setup**
+- Configurer Cloudflare ou AWS CloudFront
+- Cache des assets statiques (24h+)
+- Compression Gzip/Brotli
+
+### 2. **Database Optimization**
+- Index sur les requêtes fréquentes
+- Connection pooling
+- Cache Redis pour les sessions
+
+### 3. **Monitoring Alerts**
+```yaml
+# Alerts Sentry
+- Error rate > 1%
+- Response time > 2s
+- Memory usage > 80%
+```
+
+## 🎯 Checklist Final
+
+- [ ] ✅ Application accessible via HTTPS
+- [ ] ✅ PWA installable sur mobile
+- [ ] ✅ Performance Score > 90 (Lighthouse)
+- [ ] ✅ Accessibilité Score > 95
+- [ ] ✅ SEO Score > 90
+- [ ] ✅ Monitoring actif (Sentry + Analytics)
+- [ ] ✅ Backup automatique configuré
+- [ ] ✅ SSL/TLS Grade A+ (SSL Labs)
 
 ---
 
-## 📈 MÉTRIQUES CIBLES
+**🚀 Votre application Dialect Game est prête pour la production !**
 
-### Performance
-- **First Contentful Paint**: < 1.5s
-- **Largest Contentful Paint**: < 2.5s
-- **Cumulative Layout Shift**: < 0.1
-- **Bundle Size**: < 100KB gzippé ✅ (63.95KB)
-
-### Qualité
-- **Lighthouse Performance**: > 90
-- **Lighthouse Accessibility**: > 95
-- **PWA Score**: 100
-- **Tests Coverage**: > 70% (67% actuel)
-
----
-
-## 🎉 COMMANDES DE DÉPLOIEMENT
-
-### Déploiement Rapide Netlify
-```bash
-# Si CLI installé
-npm install -g netlify-cli
-netlify deploy --prod --dir=dist
-```
-
-### Déploiement Rapide Vercel
-```bash
-# Si CLI installé
-npm install -g vercel
-vercel --prod
-```
-
-### Build + Preview Local
-```bash
-npm run build
-npm run preview
-# Ouvrir http://localhost:4173
-```
-
----
-
-## ✨ PROCHAINES ÉTAPES
-
-1. **Déploiement immédiat** avec Netlify/Vercel
-2. **Validation PWA** et performance
-3. **Correction CSS** en parallèle
-4. **Amélioration tests** continue
-5. **Monitoring** et analytics
-
-**L'application est prête pour la production! 🚀**
+Pour toute question ou problème de déploiement, consultez les logs ou créez une issue sur le repository.

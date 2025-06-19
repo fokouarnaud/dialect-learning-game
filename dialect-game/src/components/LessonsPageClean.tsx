@@ -29,16 +29,6 @@ import type { Lesson } from './LessonSelector';
 import NavigationGuard from './NavigationGuard';
 import { ThemeToggle } from './theme/ThemeToggleSimple';
 
-// Single parallax background image - Large educational landscape
-const PARALLAX_BACKGROUND_IMAGE = 'https://images.pexels.com/photos/289737/pexels-photo-289737.jpeg?auto=compress&cs=tinysrgb&w=2560&h=1440';
-
-// Calculate vertical scroll position based on chapter progression
-const getParallaxScrollPosition = (chapterIndex: number, totalChapters: number): number => {
-  // Image height is larger than viewport, we scroll through it progressively
-  // Each chapter represents a portion of the vertical scroll through the image
-  const scrollPercentage = (chapterIndex / (totalChapters - 1)) * 100;
-  return Math.min(scrollPercentage, 100); // 0% to 100% of image height
-};
 
 interface Chapter {
   id: string;
@@ -155,24 +145,14 @@ export const LessonsPageClean: React.FC = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showChapterInfo, setShowChapterInfo] = useState(true);
-  
-  // Parallax state - smooth progressive movement
-  const [parallaxOffset, setParallaxOffset] = useState(0);
-  const [targetParallaxOffset, setTargetParallaxOffset] = useState(0);
 
   const currentChapter = chapters[currentChapterIndex];
   const totalChapters = chapters.length;
-  
-  // Calculate background position based on chapter progress
-  const getBackgroundPosition = (chapterIndex: number): number => {
-    return getParallaxScrollPosition(chapterIndex, totalChapters);
-  };
 
   const handlePreviousChapter = () => {
     if (currentChapterIndex > 0 && !isTransitioning) {
       setIsTransitioning(true);
       const newIndex = Math.max(0, currentChapterIndex - 1);
-      setTargetParallaxOffset(getBackgroundPosition(newIndex));
       
       setTimeout(() => {
         setCurrentChapterIndex(newIndex);
@@ -185,7 +165,6 @@ export const LessonsPageClean: React.FC = () => {
     if (currentChapterIndex < totalChapters - 1 && !isTransitioning) {
       setIsTransitioning(true);
       const newIndex = Math.min(totalChapters - 1, currentChapterIndex + 1);
-      setTargetParallaxOffset(getBackgroundPosition(newIndex));
       
       setTimeout(() => {
         setCurrentChapterIndex(newIndex);
@@ -198,7 +177,6 @@ export const LessonsPageClean: React.FC = () => {
     if (index !== currentChapterIndex && index >= 0 && index < totalChapters && !isTransitioning) {
       setIsTransitioning(true);
       const newIndex = Math.max(0, Math.min(totalChapters - 1, index));
-      setTargetParallaxOffset(getBackgroundPosition(newIndex));
       
       setTimeout(() => {
         setCurrentChapterIndex(newIndex);
@@ -238,18 +216,6 @@ export const LessonsPageClean: React.FC = () => {
     }
   };
 
-  // Direct parallax update for CSS transition
-  useEffect(() => {
-    setParallaxOffset(targetParallaxOffset);
-  }, [targetParallaxOffset]);
-
-  // Initialize background position
-  useEffect(() => {
-    const initialOffset = getBackgroundPosition(currentChapterIndex);
-    setParallaxOffset(initialOffset);
-    setTargetParallaxOffset(initialOffset);
-  }, []);
-
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -283,27 +249,11 @@ export const LessonsPageClean: React.FC = () => {
   }, [currentChapterIndex, showTableOfContents, isTransitioning, totalChapters]);
 
   return (
-    <div className="min-h-screen relative">
-      {/* Single Large Background Image with smooth transition animation */}
-      <div
-        className="fixed inset-0 w-full h-[300vh]"
-        style={{
-          backgroundImage: `url(${PARALLAX_BACKGROUND_IMAGE})`,
-          backgroundPosition: `center ${parallaxOffset}%`,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          filter: 'brightness(0.6) contrast(1.2)',
-          transition: 'background-position 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
-          zIndex: -1
-        }}
-      />
-
-      {/* Transparent overlay container - NO background to reveal image */}
-      <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/95 dark:from-background dark:via-background dark:to-muted/10">
         
-        {/* Minimal Header with normal transparency */}
-        <header className="bg-background/80 backdrop-blur-sm border-b border-border/30 sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-3">
+        {/* Mobile-Optimized Header */}
+        <header className="bg-background/95 dark:bg-background/98 backdrop-blur-sm border-b border-border/30 sticky top-0 z-40">
+        <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3">
           <div className="flex items-center justify-between">
             {/* Left - Back Navigation */}
             <Button
@@ -386,24 +336,24 @@ export const LessonsPageClean: React.FC = () => {
         </div>
       </header>
 
-      {/* Chapter Info with normal transparency */}
+      {/* Chapter Info - Mobile Optimized */}
       {showChapterInfo && (
-        <div className="bg-background/70 backdrop-blur-sm border-b border-border/30">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-start justify-between gap-4">
+        <div className="bg-background/85 dark:bg-background/90 backdrop-blur-sm border-b border-border/30">
+          <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
                   <div className={`w-3 h-3 rounded-full ${getDifficultyColor(currentChapter.difficulty)} flex-shrink-0`}></div>
-                  <h2 className="text-lg font-semibold text-foreground truncate">{currentChapter.title}</h2>
+                  <h2 className="text-base sm:text-lg font-semibold text-foreground line-clamp-1 flex-1">{currentChapter.title}</h2>
                   <Badge className={`${getDifficultyColor(currentChapter.difficulty)} text-white text-xs flex-shrink-0`}>
                     {currentChapter.difficulty.toUpperCase()}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{currentChapter.description}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-2 sm:line-clamp-none">{currentChapter.description}</p>
               </div>
               
-              <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                <div className="text-right">
+              <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-3 sm:gap-2 flex-shrink-0">
+                <div className="text-left sm:text-right">
                   <div className="text-sm font-medium text-foreground">
                     {currentChapter.completedLessons}/{currentChapter.totalLessons} lessons
                   </div>
@@ -413,7 +363,7 @@ export const LessonsPageClean: React.FC = () => {
                 </div>
                 
                 {/* Mini Progress Indicator */}
-                <div className="w-20 bg-muted rounded-full h-1.5">
+                <div className="w-16 sm:w-20 bg-muted rounded-full h-1.5">
                   <div
                     className="h-1.5 bg-primary rounded-full transition-all duration-500"
                     style={{ width: `${(currentChapter.completedLessons / currentChapter.totalLessons) * 100}%` }}
@@ -495,15 +445,15 @@ export const LessonsPageClean: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Content - With Left Margin for Pagination */}
-      <div className="container mx-auto px-4 lg:pl-16 py-6 pb-20">
+      {/* Main Content - Mobile Optimized */}
+      <div className="container mx-auto px-3 sm:px-4 lg:pl-16 py-4 sm:py-6 pb-20">
         <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-50 transform translate-y-4' : 'opacity-100 transform translate-y-0'}`}>
           
           {/* Lessons - Main Content Focus */}
           <div className={
             viewMode === 'grid'
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-              : "space-y-3"
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
+              : "space-y-2 sm:space-y-3"
           }>
             {currentChapter.lessons.map((lesson, index) => {
               if (viewMode === 'list') {
@@ -519,28 +469,40 @@ export const LessonsPageClean: React.FC = () => {
                     `}
                     onClick={() => lesson.status !== 'locked' && handleLessonSelect(lesson)}
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        {/* Left - Lesson Info */}
-                        <div className="flex items-center gap-3 flex-1">
-                          {getStatusIcon(lesson.status)}
+                    <CardContent className="p-3 sm:p-4">
+                      {/* Mobile: Stack vertically, Desktop: Horizontal layout */}
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                        {/* Top/Left - Lesson Info */}
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
+                          <div className="flex-shrink-0 mt-0.5">
+                            {getStatusIcon(lesson.status)}
+                          </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium text-foreground group-hover:text-primary transition-colors truncate">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-medium text-foreground group-hover:text-primary transition-colors text-sm sm:text-base line-clamp-1">
                                 {lesson.title}
                               </h3>
                               {lesson.isRecommended && (
                                 <Star className="h-3 w-3 text-accent fill-current flex-shrink-0" />
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground truncate">
+                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mb-2 sm:mb-0">
                               {lesson.description}
                             </p>
+                            {/* Mobile: Show meta info below description */}
+                            <div className="flex items-center gap-2 sm:hidden">
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.duration}min
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.xpReward}XP
+                              </Badge>
+                            </div>
                           </div>
                         </div>
                         
-                        {/* Center - Meta Info */}
-                        <div className="hidden sm:flex items-center gap-2 mx-4">
+                        {/* Desktop: Meta Info */}
+                        <div className="hidden sm:flex items-center gap-2 mx-4 flex-shrink-0">
                           <Badge variant="outline" className="text-xs">
                             {lesson.duration}min
                           </Badge>
@@ -549,24 +511,26 @@ export const LessonsPageClean: React.FC = () => {
                           </Badge>
                         </div>
                         
-                        {/* Right - Action */}
-                        <Button
-                          size="sm"
-                          className={`${
-                            lesson.status === 'current'
-                              ? 'bg-primary hover:bg-primary/80'
-                              : lesson.status === 'completed'
-                              ? 'bg-accent hover:bg-accent/80'
-                              : lesson.status === 'locked'
-                              ? 'bg-muted cursor-not-allowed'
-                              : 'bg-secondary hover:bg-secondary/80'
-                          }`}
-                          disabled={lesson.status === 'locked'}
-                        >
-                          {lesson.status === 'completed' ? 'Review' :
-                           lesson.status === 'current' ? 'Continue' :
-                           lesson.status === 'locked' ? 'Locked' : 'Start'}
-                        </Button>
+                        {/* Bottom/Right - Action Button */}
+                        <div className="flex justify-end sm:justify-start">
+                          <Button
+                            size="sm"
+                            className={`w-full sm:w-auto text-xs sm:text-sm px-3 py-2 ${
+                              lesson.status === 'current'
+                                ? 'bg-primary hover:bg-primary/80'
+                                : lesson.status === 'completed'
+                                ? 'bg-accent hover:bg-accent/80'
+                                : lesson.status === 'locked'
+                                ? 'bg-muted cursor-not-allowed'
+                                : 'bg-secondary hover:bg-secondary/80'
+                            }`}
+                            disabled={lesson.status === 'locked'}
+                          >
+                            {lesson.status === 'completed' ? 'Review' :
+                             lesson.status === 'current' ? 'Continue' :
+                             lesson.status === 'locked' ? 'Locked' : 'Start'}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -664,49 +628,49 @@ export const LessonsPageClean: React.FC = () => {
         </div>
       </div>
 
-      {/* Table of Contents Overlay */}
+      {/* Table of Contents Overlay - Mobile Optimized */}
       {showTableOfContents && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-card rounded-lg border border-border w-full max-w-4xl max-h-[80vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-border">
-              <h2 className="text-2xl font-bold text-foreground">Table of Contents</h2>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 p-2 sm:p-4 overflow-hidden">
+          <div className="bg-card rounded-lg border border-border w-full h-full max-w-4xl mx-auto flex flex-col">
+            <div className="flex items-center justify-between p-3 sm:p-4 md:p-6 border-b border-border flex-shrink-0">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground">Chapters</h2>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowTableOfContents(false)}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground h-8 w-8 p-0"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </div>
             
-            <div className="overflow-y-auto max-h-[60vh] p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                 {chapters.map((chapter, index) => (
                   <Card
                     key={chapter.id}
                     className={`
-                      cursor-pointer transition-all duration-200 hover:scale-105
+                      cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-95
                       ${index === currentChapterIndex ? 'ring-2 ring-primary bg-primary/20' : 'bg-card'}
                       border-border hover:border-primary/50
                     `}
                     onClick={() => handleChapterSelect(index)}
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className={`w-3 h-3 rounded-full ${getDifficultyColor(chapter.difficulty)}`}></div>
-                        <span className="text-foreground font-bold">Ch. {chapter.number}</span>
+                    <CardContent className="p-2 sm:p-3 md:p-4">
+                      <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                        <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${getDifficultyColor(chapter.difficulty)}`}></div>
+                        <span className="text-foreground font-bold text-xs sm:text-sm md:text-base">Ch. {chapter.number}</span>
                         {index === currentChapterIndex && (
-                          <Badge className="bg-primary text-primary-foreground text-xs">CURRENT</Badge>
+                          <Badge className="bg-primary text-primary-foreground text-xs">NOW</Badge>
                         )}
                       </div>
-                      <h4 className="text-sm font-medium text-foreground mb-1">{chapter.title}</h4>
-                      <div className="text-xs text-muted-foreground">
+                      <h4 className="text-xs sm:text-sm font-medium text-foreground mb-1 line-clamp-2">{chapter.title}</h4>
+                      <div className="text-xs text-muted-foreground mb-2">
                         {chapter.completedLessons}/{chapter.totalLessons} lessons
                       </div>
                       <Progress
                         value={(chapter.completedLessons / chapter.totalLessons) * 100}
-                        className="h-1 mt-2"
+                        className="h-1 mt-1"
                       />
                     </CardContent>
                   </Card>
@@ -743,8 +707,6 @@ export const LessonsPageClean: React.FC = () => {
           isOpen={showNavigationGuard}
         />
       )}
-      
-      </div> {/* Fermeture de la div transparente */}
     </div>
   );
 };

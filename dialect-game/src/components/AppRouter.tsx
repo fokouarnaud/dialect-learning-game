@@ -23,7 +23,6 @@ const GameDashboard = lazy(() => import('./game/GameDashboard').then(module => (
 const TailwindTest = lazy(() => import('./TailwindTest'));
 const TestComponents = lazy(() => import('./TestComponents'));
 const Phase3Demo = lazy(() => import('./Phase3Demo'));
-const Phase4Demo = lazy(() => import('./Phase4Demo'));
 
 // Loading component with enhanced UX
 const LoadingSpinner: React.FC<{ message?: string }> = ({ message = "Loading..." }) => (
@@ -98,8 +97,6 @@ const Layout: React.FC<{
       breadcrumbs.push({ label: 'Dashboard', path: '/dashboard', isActive: true });
     } else if (path === '/phase3') {
       breadcrumbs.push({ label: 'Phase 3 - EdClub Integration', path: '/phase3', isActive: true });
-    } else if (path === '/phase4') {
-      breadcrumbs.push({ label: 'Phase 4 - Vertical Navigation', path: '/phase4', isActive: true });
     } else if (path === '/tailwind-test') {
       breadcrumbs.push({ label: 'Tailwind Test', path: '/tailwind-test', isActive: true });
     } else if (path === '/components-test') {
@@ -287,18 +284,6 @@ export function AppRouter() {
         <Route
           path="/demo"
           element={<TestPageWrapper component={Phase3Demo} title="Interactive Demo" />}
-        />
-        
-        {/* Phase 4 - Vertical Navigation & Parallax Demo */}
-        <Route
-          path="/phase4"
-          element={
-            <Layout showNavigation={false}>
-              <Suspense fallback={<LoadingSpinner message="Loading Phase 4 demo..." />}>
-                <Phase4Demo />
-              </Suspense>
-            </Layout>
-          }
         />
         
         {/* Test routes */}

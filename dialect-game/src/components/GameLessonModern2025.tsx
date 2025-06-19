@@ -121,6 +121,7 @@ export const GameLessonModern2025: React.FC = () => {
 
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
   const processingRef = useRef<NodeJS.Timeout | null>(null);
+  const autoStopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const currentStep = lessonData.steps[gameState.currentStep];
 
   // Cleanup function
@@ -128,6 +129,7 @@ export const GameLessonModern2025: React.FC = () => {
     return () => {
       if (countdownRef.current) clearInterval(countdownRef.current);
       if (processingRef.current) clearTimeout(processingRef.current);
+      if (autoStopTimeoutRef.current) clearTimeout(autoStopTimeoutRef.current);
     };
   }, []);
 
@@ -143,9 +145,10 @@ export const GameLessonModern2025: React.FC = () => {
     // Clear any existing timers
     if (countdownRef.current) clearInterval(countdownRef.current);
     if (processingRef.current) clearTimeout(processingRef.current);
+    if (autoStopTimeoutRef.current) clearTimeout(autoStopTimeoutRef.current);
 
-    setGameState(prev => ({ 
-      ...prev, 
+    setGameState(prev => ({
+      ...prev,
       phase: 'recording',
       timeRemaining: 10
     }));
@@ -162,35 +165,46 @@ export const GameLessonModern2025: React.FC = () => {
       });
     }, 1000);
 
-    // Auto-stop recording after 10 seconds
-    setTimeout(() => {
-      if (countdownRef.current) {
-        clearInterval(countdownRef.current);
-        countdownRef.current = null;
-      }
-      setGameState(prev => ({ ...prev, phase: 'processing' }));
-      
-      // Process the recording
-      processingRef.current = setTimeout(() => {
-        const accuracy = 75 + Math.random() * 20; // 75-95% accuracy
-        const points = Math.floor(accuracy * 10);
-        
-        setGameState(prev => ({
-          ...prev,
-          phase: 'feedback',
-          lastAccuracy: accuracy,
-          score: prev.score + points,
-          attempts: prev.attempts + 1
-        }));
-      }, 1500);
+    // Auto-stop recording after 10 seconds (only if not manually stopped)
+    autoStopTimeoutRef.current = setTimeout(() => {
+      // Check if we're still recording before auto-stopping
+      setGameState(prev => {
+        if (prev.phase === 'recording') {
+          if (countdownRef.current) {
+            clearInterval(countdownRef.current);
+            countdownRef.current = null;
+          }
+          
+          // Process the recording
+          processingRef.current = setTimeout(() => {
+            const accuracy = 75 + Math.random() * 20; // 75-95% accuracy
+            const points = Math.floor(accuracy * 10);
+            
+            setGameState(prevState => ({
+              ...prevState,
+              phase: 'feedback',
+              lastAccuracy: accuracy,
+              score: prevState.score + points,
+              attempts: prevState.attempts + 1
+            }));
+          }, 1500);
+          
+          return { ...prev, phase: 'processing' };
+        }
+        return prev; // Don't change state if not recording
+      });
     }, 10000);
   };
 
   const stopRecording = () => {
-    // Clear timers
+    // Clear all timers to prevent auto-execution
     if (countdownRef.current) {
       clearInterval(countdownRef.current);
       countdownRef.current = null;
+    }
+    if (autoStopTimeoutRef.current) {
+      clearTimeout(autoStopTimeoutRef.current);
+      autoStopTimeoutRef.current = null;
     }
     
     setGameState(prev => ({ ...prev, phase: 'processing' }));
@@ -238,33 +252,35 @@ export const GameLessonModern2025: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       
-      {/* Minimal Header */}
+      {/* Mobile-Optimized Header */}
       <header className="bg-background/98 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate('/lessons')}
-              className="p-2 rounded-full"
+              className="p-1.5 sm:p-2 rounded-full h-8 w-8 sm:h-10 sm:w-10"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
             
-            <div className="text-center">
-              <div className="font-medium text-sm">
+            <div className="text-center flex-1 px-2">
+              <div className="font-medium text-xs sm:text-sm truncate">
                 {lessonData.title} • {gameState.currentStep + 1}/{gameState.totalSteps}
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-muted-foreground truncate hidden sm:block">
                 {lessonData.context}
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
-              <div className="bg-accent/20 text-accent rounded-full px-3 py-1 text-xs font-bold">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <div className="bg-accent/20 text-accent rounded-full px-2 sm:px-3 py-1 text-xs font-bold">
                 {gameState.score}
               </div>
-              <ThemeToggle />
+              <div className="hidden sm:block">
+                <ThemeToggle />
+              </div>
             </div>
           </div>
           
@@ -274,83 +290,85 @@ export const GameLessonModern2025: React.FC = () => {
         </div>
       </header>
 
-      {/* Single Panel Focus */}
-      <div className="container mx-auto px-4 py-8">
+      {/* Mobile-Optimized Single Panel Focus */}
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
         <div className="max-w-2xl mx-auto">
           
-          {/* Main Interaction Card */}
+          {/* Mobile-Optimized Main Interaction Card */}
           <Card className="bg-card border border-border">
-            <CardContent className="p-8">
+            <CardContent className="p-4 sm:p-6 md:p-8">
               
-              {/* Current Phrase */}
-              <div className="text-center mb-8">
-                <div className="bg-primary/5 rounded-lg p-6 border border-primary/20 mb-6">
-                  <h1 className="text-2xl font-bold text-foreground mb-3">
+              {/* Current Phrase - Mobile Responsive */}
+              <div className="text-center mb-6 sm:mb-8">
+                <div className="bg-primary/5 rounded-lg p-3 sm:p-4 md:p-6 border border-primary/20 mb-4 sm:mb-6">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-2 sm:mb-3 leading-tight">
                     {currentStep.phrase}
                   </h1>
-                  <p className="text-lg text-muted-foreground mb-4">
+                  <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-3 sm:mb-4">
                     {currentStep.translation}
                   </p>
-                  <div className="text-sm text-accent font-mono">
+                  <div className="text-xs sm:text-sm text-accent font-mono break-all">
                     {currentStep.pronunciation}
                   </div>
                 </div>
                 
-                <div className="text-sm text-muted-foreground mb-6">
+                <div className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
                   {currentStep.context}
                 </div>
               </div>
 
-              {/* Phase-based Interface */}
+              {/* Mobile-Optimized Phase-based Interface */}
               {gameState.phase === 'ready' && (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   <div className="text-center">
-                    <Button
-                      onClick={playAudio}
-                      className="bg-accent hover:bg-accent/80 text-accent-foreground px-8 py-4 text-lg rounded-full mr-4"
-                    >
-                      <Volume2 className="h-5 w-5 mr-2" />
-                      Listen
-                    </Button>
-                    
-                    <Button
-                      onClick={startRecording}
-                      className="bg-primary hover:bg-primary/80 text-primary-foreground px-8 py-4 text-lg rounded-full"
-                    >
-                      <Mic className="h-5 w-5 mr-2" />
-                      Record
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                      <Button
+                        onClick={playAudio}
+                        className="bg-accent hover:bg-accent/80 text-accent-foreground px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg rounded-full flex-1 sm:flex-none"
+                      >
+                        <Volume2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                        Listen
+                      </Button>
+                      
+                      <Button
+                        onClick={startRecording}
+                        className="bg-primary hover:bg-primary/80 text-primary-foreground px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg rounded-full flex-1 sm:flex-none"
+                      >
+                        <Mic className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                        Record
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
 
               {gameState.phase === 'listening' && (
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto bg-accent rounded-full flex items-center justify-center mb-4 animate-pulse">
-                    <Play className="h-8 w-8 text-accent-foreground" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-accent rounded-full flex items-center justify-center mb-3 sm:mb-4 animate-pulse">
+                    <Play className="h-6 w-6 sm:h-8 sm:w-8 text-accent-foreground" />
                   </div>
-                  <p className="text-lg text-muted-foreground">Playing audio...</p>
+                  <p className="text-base sm:text-lg text-muted-foreground">Playing audio...</p>
                 </div>
               )}
 
               {gameState.phase === 'recording' && (
-                <div className="text-center space-y-6">
+                <div className="text-center space-y-4 sm:space-y-6">
                   <div className="relative">
-                    <div className="w-20 h-20 mx-auto bg-destructive rounded-full flex items-center justify-center animate-pulse">
-                      <Mic className="h-10 w-10 text-destructive-foreground" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-destructive rounded-full flex items-center justify-center animate-pulse">
+                      <Mic className="h-8 w-8 sm:h-10 sm:w-10 text-destructive-foreground" />
                     </div>
-                    <div className="absolute inset-0 rounded-full border-4 border-destructive animate-ping"></div>
+                    <div className="absolute inset-0 rounded-full border-2 sm:border-4 border-destructive animate-ping"></div>
                   </div>
                   
-                  <div className="text-3xl font-bold text-foreground">
+                  <div className="text-2xl sm:text-3xl font-bold text-foreground">
                     {gameState.timeRemaining}s
                   </div>
                   
                   <Button
                     onClick={stopRecording}
-                    className="bg-muted hover:bg-muted/80 text-muted-foreground px-6 py-3 rounded-full"
+                    className="bg-muted hover:bg-muted/80 text-muted-foreground px-4 sm:px-6 py-2 sm:py-3 rounded-full"
                   >
-                    <StopCircle className="h-5 w-5 mr-2" />
+                    <StopCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     Stop
                   </Button>
                 </div>
@@ -358,57 +376,57 @@ export const GameLessonModern2025: React.FC = () => {
 
               {gameState.phase === 'processing' && (
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto bg-accent rounded-full flex items-center justify-center mb-4">
-                    <div className="w-8 h-8 border-4 border-accent-foreground border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-accent rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 sm:border-4 border-accent-foreground border-t-transparent rounded-full animate-spin"></div>
                   </div>
-                  <p className="text-lg text-muted-foreground">Analyzing pronunciation...</p>
+                  <p className="text-base sm:text-lg text-muted-foreground">Analyzing...</p>
                 </div>
               )}
 
               {gameState.phase === 'feedback' && (
-                <div className="text-center space-y-6">
-                  <div className="w-20 h-20 mx-auto bg-primary rounded-full flex items-center justify-center mb-4">
-                    {isSuccess ? 
-                      <CheckCircle2 className="h-10 w-10 text-primary-foreground" /> : 
-                      <XCircle className="h-10 w-10 text-primary-foreground" />
+                <div className="text-center space-y-4 sm:space-y-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-primary rounded-full flex items-center justify-center mb-3 sm:mb-4">
+                    {isSuccess ?
+                      <CheckCircle2 className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground" /> :
+                      <XCircle className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground" />
                     }
                   </div>
                   
                   <div>
-                    <div className="text-3xl font-bold text-foreground mb-2">
+                    <div className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
                       {Math.round(gameState.lastAccuracy)}%
                     </div>
-                    <Progress value={gameState.lastAccuracy} className="h-3 mb-4" />
-                    <p className="text-lg text-muted-foreground">
+                    <Progress value={gameState.lastAccuracy} className="h-2 sm:h-3 mb-3 sm:mb-4" />
+                    <p className="text-base sm:text-lg text-muted-foreground">
                       {isSuccess ? 'Great pronunciation!' : 'Keep practicing!'}
                     </p>
                   </div>
                   
-                  {/* Maximum 2 choices - UI/UX 2025 best practice */}
-                  <div className="flex gap-4 justify-center">
+                  {/* Mobile-Optimized Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                     {!isSuccess && (
                       <Button
                         onClick={handleRetry}
-                        className="bg-muted hover:bg-muted/80 text-muted-foreground px-6 py-3 rounded-full"
+                        className="bg-muted hover:bg-muted/80 text-muted-foreground px-4 sm:px-6 py-2 sm:py-3 rounded-full flex-1 sm:flex-none"
                       >
-                        <RotateCcw className="h-5 w-5 mr-2" />
+                        <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                         Try Again
                       </Button>
                     )}
                     
                     <Button
                       onClick={handleSuccess}
-                      className="bg-primary hover:bg-primary/80 text-primary-foreground px-6 py-3 rounded-full"
+                      className="bg-primary hover:bg-primary/80 text-primary-foreground px-4 sm:px-6 py-2 sm:py-3 rounded-full flex-1 sm:flex-none"
                     >
                       {gameState.currentStep < gameState.totalSteps - 1 ? (
                         <>
                           Next Step
-                          <ArrowRight className="h-5 w-5 ml-2" />
+                          <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
                         </>
                       ) : (
                         <>
-                          Complete Lesson
-                          <CheckCircle2 className="h-5 w-5 ml-2" />
+                          Complete
+                          <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
                         </>
                       )}
                     </Button>

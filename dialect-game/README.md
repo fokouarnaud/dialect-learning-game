@@ -189,20 +189,111 @@ Ce projet a été développé en suivant une méthodologie **Test-Driven Develop
 - **📊 Analytics Privacy** respectueuse
 - **🔐 Data Encryption** en transit et repos
 
-## 🌍 Déploiement
+## 🌍 Déploiement et Configuration
+
+### **Variables d'Environnement Requises**
+
+Pour déployer l'application, configurez les variables suivantes dans votre fichier `.env.local` :
+
+```bash
+# API Configuration
+VITE_API_URL=https://api.dialectgame.com
+VITE_API_VERSION=v1
+
+# Authentication (OAuth Google)
+VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+VITE_GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Analytics & Monitoring
+VITE_ANALYTICS_ID=GA-XXXXXXXXX
+VITE_SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
+
+# Voice Recognition APIs
+VITE_SPEECH_API_KEY=your-speech-api-key
+VITE_SPEECH_SERVICE_REGION=eastus
+
+# Database (if using external DB)
+VITE_DATABASE_URL=postgresql://username:password@host:port/database
+VITE_REDIS_URL=redis://username:password@host:port
+
+# External Services
+VITE_TRANSLATE_API_KEY=your-translate-api-key
+VITE_DICTIONARY_API_KEY=your-dictionary-api-key
+
+# Security
+VITE_ENCRYPTION_KEY=your-32-character-encryption-key
+VITE_JWT_SECRET=your-jwt-secret-key
+
+# PWA & Notifications
+VITE_VAPID_PUBLIC_KEY=your-vapid-public-key
+VITE_VAPID_PRIVATE_KEY=your-vapid-private-key
+
+# Development Only
+VITE_DEBUG_MODE=false
+VITE_MOCK_APIS=false
+```
+
+### **Déploiement par Plateforme**
+
+#### **Vercel (Recommandé)**
+```bash
+# 1. Installer Vercel CLI
+npm i -g vercel
+
+# 2. Configurer les variables d'environnement
+vercel env add VITE_API_URL
+vercel env add VITE_GOOGLE_CLIENT_ID
+# ... ajouter toutes les variables nécessaires
+
+# 3. Déployer
+vercel --prod
+```
+
+#### **Netlify**
+```bash
+# 1. Build de production
+npm run build
+
+# 2. Configurer les variables dans l'interface Netlify
+# Site Settings > Environment Variables
+
+# 3. Déployer via CLI ou Git
+netlify deploy --prod --dir=dist
+```
+
+#### **Docker**
+```dockerfile
+# Dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 4173
+CMD ["npm", "run", "preview"]
+```
+
+### **Configuration des Services Externes**
+
+#### **Google OAuth**
+1. Créer un projet sur [Google Cloud Console](https://console.cloud.google.com/)
+2. Activer l'API Google Sign-In
+3. Configurer les URLs autorisées
+4. Récupérer `VITE_GOOGLE_CLIENT_ID`
+
+#### **Speech Recognition**
+- **Azure Cognitive Services** ou **Google Speech-to-Text**
+- Configurer `VITE_SPEECH_API_KEY` et `VITE_SPEECH_SERVICE_REGION`
+
+#### **Analytics**
+- **Google Analytics 4** : Configurer `VITE_ANALYTICS_ID`
+- **Sentry** pour monitoring : Configurer `VITE_SENTRY_DSN`
 
 ### **Environments**
 - **Development**: `npm run dev`
 - **Staging**: `npm run build && npm run preview`
 - **Production**: Build optimisé avec PWA
-
-### **Variables d'Environnement**
-```bash
-# .env.local
-VITE_API_URL=https://api.dialectgame.com
-VITE_ANALYTICS_ID=GA-XXXXXXXXX
-VITE_SENTRY_DSN=https://...
-```
 
 ### **CI/CD Pipeline**
 ```yaml
