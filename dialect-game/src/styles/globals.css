@@ -92,7 +92,7 @@
   }
   
   body {
-    background-color: transparent;
+    background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-family: var(--font-body), system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -103,6 +103,8 @@
     -moz-osx-font-smoothing: grayscale;
     min-width: 320px;
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -168,6 +170,7 @@
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    background-color: hsl(var(--background));
   }
 
   /* Custom scrollbar */
@@ -522,9 +525,6 @@
     padding: 0.75rem 0.75rem;
   }
 
-  #root {
-    padding: 1rem;
-  }
 }
 
 /* Gaming mobile breakpoints */

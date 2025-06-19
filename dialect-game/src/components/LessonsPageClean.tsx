@@ -249,7 +249,7 @@ export const LessonsPageClean: React.FC = () => {
   }, [currentChapterIndex, showTableOfContents, isTransitioning, totalChapters]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/95 dark:from-background dark:via-background dark:to-muted/10">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-background/95 dark:from-background dark:via-background dark:to-muted/10">
         
         {/* Mobile-Optimized Header */}
         <header className="bg-background/95 dark:bg-background/98 backdrop-blur-sm border-b border-border/30 sticky top-0 z-40">

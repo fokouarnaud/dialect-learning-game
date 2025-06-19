@@ -250,7 +250,7 @@ export const GameLessonModern2025: React.FC = () => {
   const isSuccess = gameState.lastAccuracy >= 75;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
+    <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-background/95 dark:from-background dark:via-background dark:to-muted/10">
       
       {/* Mobile-Optimized Header */}
       <header className="bg-background/98 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
