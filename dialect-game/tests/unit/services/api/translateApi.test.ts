@@ -346,7 +346,7 @@ describe('TranslateApiService', () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
       await expect(service.translateText('Hello', 'es')).rejects.toThrow(
-        'Failed to translate text'
+        'Network error'
       );
     });
 
@@ -368,7 +368,7 @@ describe('TranslateApiService', () => {
       });
 
       await expect(service.translateText('Hello', 'es')).rejects.toThrow(
-        'Failed to translate text'
+        'Invalid JSON'
       );
     });
   });

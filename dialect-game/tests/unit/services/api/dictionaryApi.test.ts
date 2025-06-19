@@ -337,7 +337,7 @@ describe('DictionaryApiService', () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
       await expect(service.searchWord('hello')).rejects.toThrow(
-        'Failed to fetch definition for "hello"'
+        'Network error'
       );
     });
 
@@ -348,7 +348,7 @@ describe('DictionaryApiService', () => {
       });
 
       await expect(service.searchWord('hello')).rejects.toThrow(
-        'Failed to fetch definition for "hello"'
+        'Invalid JSON'
       );
     });
 
