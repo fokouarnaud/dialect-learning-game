@@ -178,6 +178,49 @@ export default defineConfig(({ command, mode }) => {
       esbuild: {
         logOverride: { 'this-is-undefined-in-esm': 'silent' }
       }
-    })
+    }),
+
+    // Configuration Vitest
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: ['./src/test/setup.ts'],
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'json', 'html'],
+        exclude: [
+          'node_modules/',
+          'src/test/setup.ts',
+          '**/*.d.ts',
+          '**/*.config.*',
+          'dist/',
+        ],
+        thresholds: {
+          global: {
+            branches: 85,
+            functions: 90,
+            lines: 90,
+            statements: 90,
+          },
+          // Seuils plus élevés pour code critique
+          'src/services/**': {
+            branches: 95,
+            functions: 95,
+            lines: 95,
+            statements: 95,
+          },
+          'src/core/**': {
+            branches: 95,
+            functions: 95,
+            lines: 95,
+            statements: 95,
+          },
+        },
+      },
+      include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+      exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
+      testTimeout: 10000,
+      hookTimeout: 10000,
+    },
   }
 })
