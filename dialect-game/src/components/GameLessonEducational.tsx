@@ -319,13 +319,13 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
   const lessonData = getLessonData(chapterNumber, lessonId);
   
   const [state, setState] = useState<EducationalState>({
-    currentPhase: searchParams.get('testIntegration') ? 'integration' : 'situation', // TEST: Démarrer en intégration si paramètre présent
-    currentStep: searchParams.get('testIntegration') ? 3 : 0, // TEST: Etape 4/4 pour intégration
+    currentPhase: 'situation', // Démarrer normalement en phase situation
+    currentStep: 0, // Première étape
     totalSteps: 4, // 4 phases pédagogiques
     isRecording: false,
     isProcessing: false,
     steps: [],
-    overallScore: searchParams.get('testIntegration') ? 500 : 0, // TEST: Score de base
+    overallScore: 0, // Score initial à zéro
     message: '',
     timeRemaining: 5,
     phaseProgress: 0
