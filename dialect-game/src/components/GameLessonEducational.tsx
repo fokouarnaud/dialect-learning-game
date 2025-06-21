@@ -319,13 +319,13 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
   const lessonData = getLessonData(chapterNumber, lessonId);
   
   const [state, setState] = useState<EducationalState>({
-    currentPhase: 'situation', // Démarre par la phase situation
-    currentStep: 0, // Commencer à 0 pour avoir 1/4, 2/4, 3/4, 4/4
+    currentPhase: searchParams.get('testIntegration') ? 'integration' : 'situation', // TEST: Démarrer en intégration si paramètre présent
+    currentStep: searchParams.get('testIntegration') ? 3 : 0, // TEST: Etape 4/4 pour intégration
     totalSteps: 4, // 4 phases pédagogiques
     isRecording: false,
     isProcessing: false,
     steps: [],
-    overallScore: 0,
+    overallScore: searchParams.get('testIntegration') ? 500 : 0, // TEST: Score de base
     message: '',
     timeRemaining: 5,
     phaseProgress: 0
@@ -488,13 +488,29 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
         message = "Bon essai ! Continuez à pratiquer.";
       }
       
-      setState(prev => ({
-        ...prev,
-        overallScore: prev.overallScore + score,
-        isProcessing: false,
-        message,
-        phaseProgress: prev.phaseProgress + (100 / getTotalStepsForPhase(prev.currentPhase))
-      }));
+      setState(prev => {
+        const newState = {
+          ...prev,
+          overallScore: prev.overallScore + score,
+          isProcessing: false,
+          message
+        };
+        
+        // Gérer spécialement la phase d'intégration pour éviter la boucle
+        if (prev.currentPhase === 'integration') {
+          // Pour la phase d'intégration, on ne met PAS à jour phaseProgress automatiquement
+          // car cela sera géré par setUserTurnCompleted dans IntegrationPhase
+          return newState;
+        } else {
+          // Pour les autres phases, mise à jour normale
+          return {
+            ...newState,
+            phaseProgress: prev.phaseProgress + (100 / getTotalStepsForPhase(prev.currentPhase))
+          };
+        }
+      });
+      
+      // Pour la phase d'intégration, la completion du dialogue sera gérée par un useEffect dans IntegrationPhase
       
     } catch (error) {
       console.error('Erreur traitement:', error);
@@ -504,7 +520,7 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
         message: "Erreur lors de l'analyse. Réessayez."
       }));
     }
-  }, []);
+  }, [state.currentPhase]);
 
   const getTotalStepsForPhase = (phase: LearningPhase): number => {
     switch (phase) {
@@ -818,6 +834,17 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
       setUserTurnCompleted(false);
     }, [currentDialogueIndex]);
     
+    // Gérer la completion du dialogue utilisateur après enregistrement (version corrigée)
+    useEffect(() => {
+      if (!state.isProcessing && 
+          state.message && 
+          currentDialogue && 
+          currentDialogue.speaker === 'user' && 
+          !userTurnCompleted) {
+        setUserTurnCompleted(true);
+      }
+    }, [state.isProcessing, state.message, currentDialogue?.speaker, userTurnCompleted]);
+    
     const handleNextDialogue = useCallback(() => {
       console.log('handleNextDialogue clicked - currentDialogueIndex:', currentDialogueIndex);
       
@@ -854,29 +881,8 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
       };
     }, [currentDialogueIndex, currentDialogue, playAudio]);
 
-    // Gérer la completion du tour utilisateur après enregistrement
-    useEffect(() => {
-      if (!state.isProcessing &&
-          state.message &&
-          state.currentPhase === 'integration' &&
-          currentDialogue &&
-          currentDialogue.speaker === 'user' &&
-          !userTurnCompleted) {
-        
-        console.log('Setting userTurnCompleted to true for dialogue:', currentDialogue.text);
-        setUserTurnCompleted(true);
-        
-        // Mettre à jour la progression de la phase
-        const userTurns = lessonData.integration.dialogue.filter(d => d.speaker === 'user');
-        const currentUserTurnIndex = userTurns.findIndex(turn => turn.text === currentDialogue.text);
-        if (currentUserTurnIndex !== -1) {
-          setState(prev => ({
-            ...prev,
-            phaseProgress: ((currentUserTurnIndex + 1) / userTurns.length) * 100
-          }));
-        }
-      }
-    }, [state.isProcessing, state.message, state.currentPhase, currentDialogue, userTurnCompleted, lessonData.integration.dialogue]);
+    // Gérer la completion du tour utilisateur - logique simplifiée sans useEffect
+    // Cette logique est maintenant gérée directement dans processRecording
     
     return (
       <div className="space-y-6">
