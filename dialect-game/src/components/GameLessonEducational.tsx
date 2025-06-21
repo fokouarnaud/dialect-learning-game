@@ -320,7 +320,7 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
   
   const [state, setState] = useState<EducationalState>({
     currentPhase: 'situation', // Démarre par la phase situation
-    currentStep: 1,
+    currentStep: 0, // Commencer à 0 pour avoir 1/4, 2/4, 3/4, 4/4
     totalSteps: 4, // 4 phases pédagogiques
     isRecording: false,
     isProcessing: false,
@@ -339,15 +339,35 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
+  const autoPlayTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const integrationContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Nettoyage
   useEffect(() => {
     return () => {
-      if (countdownRef.current) clearInterval(countdownRef.current);
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+        countdownRef.current = null;
+      }
+      if (autoPlayTimeoutRef.current) {
+        clearTimeout(autoPlayTimeoutRef.current);
+        autoPlayTimeoutRef.current = null;
+      }
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
         mediaRecorderRef.current.stop();
       }
     };
+  }, []);
+
+  // Auto-scroll vers le bas
+  const scrollToBottom = useCallback(() => {
+    if (integrationContainerRef.current) {
+      const container = integrationContainerRef.current;
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, []);
 
   // Écouter audio
@@ -358,8 +378,11 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
       utterance.rate = 0.8;
       utterance.pitch = 1.0;
       speechSynthesis.speak(utterance);
+      
+      // Scroll vers le bas après avoir déclenché l'audio
+      setTimeout(scrollToBottom, 100);
     }
-  }, []);
+  }, [scrollToBottom]);
 
   // Enregistrement
   const startRecording = useCallback(async () => {
@@ -381,8 +404,8 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
         stream.getTracks().forEach(track => track.stop());
       };
 
-      setState(prev => ({ 
-        ...prev, 
+      setState(prev => ({
+        ...prev,
         isRecording: true,
         timeRemaining: 5,
         message: ''
@@ -390,35 +413,58 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
       
       mediaRecorderRef.current.start();
       startCountdown();
+      
+      // Scroll vers le bas quand l'enregistrement commence
+      setTimeout(scrollToBottom, 200);
 
     } catch (error) {
       console.error('Erreur microphone:', error);
-      setState(prev => ({ 
-        ...prev, 
+      setState(prev => ({
+        ...prev,
         message: "Impossible d'accéder au microphone. Vérifiez les permissions."
       }));
     }
-  }, []);
+  }, [scrollToBottom]);
 
   const stopRecording = useCallback(() => {
+    // Nettoyer le timer
     if (countdownRef.current) {
       clearInterval(countdownRef.current);
       countdownRef.current = null;
     }
     
+    // Arrêter l'enregistrement
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
     }
     
-    setState(prev => ({ ...prev, isRecording: false }));
+    // Mettre à jour l'état
+    setState(prev => ({
+      ...prev,
+      isRecording: false,
+      timeRemaining: 5
+    }));
   }, []);
 
   const startCountdown = useCallback(() => {
+    if (countdownRef.current) {
+      clearInterval(countdownRef.current);
+      countdownRef.current = null;
+    }
+    
+    setState(prev => ({ ...prev, timeRemaining: 5 }));
+    
     countdownRef.current = setInterval(() => {
       setState(prev => {
         if (prev.timeRemaining <= 1) {
-          stopRecording();
-          return prev;
+          // Arrêter le timer avant d'appeler stopRecording
+          if (countdownRef.current) {
+            clearInterval(countdownRef.current);
+            countdownRef.current = null;
+          }
+          // Déclencher stopRecording de façon asynchrone pour éviter la boucle
+          setTimeout(() => stopRecording(), 10);
+          return { ...prev, timeRemaining: 0, isRecording: false };
         }
         return { ...prev, timeRemaining: prev.timeRemaining - 1 };
       });
@@ -475,17 +521,31 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
     const currentIndex = phases.indexOf(state.currentPhase);
     
     if (currentIndex < phases.length - 1) {
+      const nextPhaseType = phases[currentIndex + 1];
+      
+      // Réinitialiser les indices appropriés selon la phase suivante
+      if (nextPhaseType === 'lesson') {
+        setCurrentWordIndex(0);
+      } else if (nextPhaseType === 'application') {
+        setCurrentExerciseIndex(0);
+      } else if (nextPhaseType === 'integration') {
+        setCurrentDialogueIndex(0);
+      }
+      
       setState(prev => ({
         ...prev,
-        currentPhase: phases[currentIndex + 1],
-        currentStep: prev.currentStep + 1,
+        currentPhase: nextPhaseType,
+        currentStep: Math.min(prev.currentStep + 1, prev.totalSteps - 1), // Protection contre dépassement
         phaseProgress: 0,
-        message: ''
+        message: '',
+        isRecording: false,
+        isProcessing: false,
+        timeRemaining: 5
       }));
     } else {
       navigate(`/lesson-complete-educational?status=success&chapterNumber=${chapterNumber}&score=${state.overallScore}&lessonId=${lessonId}`);
     }
-  }, [state.currentPhase, state.currentStep, state.overallScore, chapterNumber, navigate]);
+  }, [state.currentPhase, state.currentStep, state.overallScore, chapterNumber, navigate, lessonId]);
 
   // Obtenir le contenu de la phase actuelle
   const getCurrentPhaseContent = () => {
@@ -546,13 +606,7 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
             }));
           } else {
             console.log('All words completed, moving to next phase');
-            setState(prev => ({
-              ...prev,
-              currentPhase: 'application',
-              currentStep: prev.currentStep + 1,
-              phaseProgress: 0,
-              message: ''
-            }));
+            nextPhase();
           }
         };
         
@@ -637,13 +691,7 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
       } else {
         console.log('All exercises completed, moving to integration phase');
         // Transition vers phase intégration
-        setState(prev => ({
-          ...prev,
-          currentPhase: 'integration',
-          currentStep: prev.currentStep + 1,
-          phaseProgress: 0,
-          message: ''
-        }));
+        nextPhase();
       }
     }, [currentExerciseIndex, lessonData.application.exercises.length]);
 
@@ -765,6 +813,11 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
     const [userTurnCompleted, setUserTurnCompleted] = useState(false);
     const currentDialogue = lessonData.integration.dialogue[currentDialogueIndex];
     
+    // Réinitialiser userTurnCompleted quand on change de dialogue
+    useEffect(() => {
+      setUserTurnCompleted(false);
+    }, [currentDialogueIndex]);
+    
     const handleNextDialogue = useCallback(() => {
       console.log('handleNextDialogue clicked - currentDialogueIndex:', currentDialogueIndex);
       
@@ -774,30 +827,45 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
         setCurrentDialogueIndex(newIndex);
         setUserTurnCompleted(false);
         setState(prev => ({ ...prev, message: '' }));
-        
-        // Auto-play pour NPC
-        const nextLine = lessonData.integration.dialogue[newIndex];
-        if (nextLine && nextLine.speaker === 'npc') {
-          setTimeout(() => playAudio(nextLine.text), 1000);
-        }
       } else {
         console.log('All dialogue completed, lesson finished');
         // Leçon terminée
         navigate(`/lesson-complete-educational?status=success&chapterNumber=${chapterNumber}&score=${state.overallScore}&lessonId=${lessonId}`);
       }
-    }, [currentDialogueIndex, lessonData.integration.dialogue.length, playAudio, navigate, chapterNumber, state.overallScore]);
+    }, [currentDialogueIndex, lessonData.integration.dialogue.length, navigate, chapterNumber, state.overallScore, lessonId]);
 
-    // Auto-play du premier message NPC
+    // Auto-play pour les messages NPC (au changement de dialogue)
     useEffect(() => {
-      if (currentDialogueIndex === 0 && currentDialogue.speaker === 'npc') {
-        setTimeout(() => playAudio(currentDialogue.text), 1000);
+      if (currentDialogue && currentDialogue.speaker === 'npc') {
+        if (autoPlayTimeoutRef.current) {
+          clearTimeout(autoPlayTimeoutRef.current);
+        }
+        autoPlayTimeoutRef.current = setTimeout(() => {
+          playAudio(currentDialogue.text);
+          autoPlayTimeoutRef.current = null;
+        }, 1000);
       }
-    }, []);
+      
+      return () => {
+        if (autoPlayTimeoutRef.current) {
+          clearTimeout(autoPlayTimeoutRef.current);
+          autoPlayTimeoutRef.current = null;
+        }
+      };
+    }, [currentDialogueIndex, currentDialogue, playAudio]);
 
     // Gérer la completion du tour utilisateur après enregistrement
     useEffect(() => {
-      if (!state.isProcessing && state.message && state.currentPhase === 'integration' && currentDialogue.speaker === 'user') {
+      if (!state.isProcessing &&
+          state.message &&
+          state.currentPhase === 'integration' &&
+          currentDialogue &&
+          currentDialogue.speaker === 'user' &&
+          !userTurnCompleted) {
+        
+        console.log('Setting userTurnCompleted to true for dialogue:', currentDialogue.text);
         setUserTurnCompleted(true);
+        
         // Mettre à jour la progression de la phase
         const userTurns = lessonData.integration.dialogue.filter(d => d.speaker === 'user');
         const currentUserTurnIndex = userTurns.findIndex(turn => turn.text === currentDialogue.text);
@@ -808,7 +876,7 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
           }));
         }
       }
-    }, [state.isProcessing, state.message, state.currentPhase, currentDialogue, lessonData.integration.dialogue]);
+    }, [state.isProcessing, state.message, state.currentPhase, currentDialogue, userTurnCompleted, lessonData.integration.dialogue]);
     
     return (
       <div className="space-y-6">
@@ -825,7 +893,7 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
         </div>
         
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-6" ref={integrationContainerRef}>
             {/* Dialogue en cours */}
             <div className="space-y-4 mb-6">
               {lessonData.integration.dialogue.slice(0, currentDialogueIndex + 1).map((line, index) => (
@@ -890,6 +958,10 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
                     <div className="text-xl font-bold text-foreground">
                       {state.timeRemaining}s
                     </div>
+                    <Button onClick={stopRecording} variant="destructive">
+                      <StopCircle className="h-4 w-4 mr-2" />
+                      Arrêter
+                    </Button>
                   </div>
                 )}
 
@@ -912,7 +984,13 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
             )}
 
             {currentDialogue.speaker === 'npc' && (
-              <div className="text-center">
+              <div className="text-center space-y-4">
+                <div className="text-sm text-muted-foreground">
+                  💬 {currentDialogue.text}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {currentDialogue.translation}
+                </div>
                 <Button onClick={handleNextDialogue} size="lg">
                   Continuer
                   <ArrowRight className="h-4 w-4 ml-2" />
@@ -982,14 +1060,14 @@ export const GameLessonEducational: React.FC = (): JSX.Element => {
           <div className="mt-2">
             <div className="flex justify-between items-center mb-1">
               <span className="text-xs text-muted-foreground">
-                {state.currentStep + 1}/{state.totalSteps}
+                {Math.min(Math.max(state.currentStep + 1, 1), state.totalSteps)}/{state.totalSteps}
               </span>
               <span className="text-xs text-muted-foreground">
-                {Math.round(((state.currentStep + 1) / state.totalSteps) * 100)}%
+                {Math.round(Math.min(Math.max(((state.currentStep + 1) / state.totalSteps) * 100, 25), 100))}%
               </span>
             </div>
             <Progress
-              value={((state.currentStep + 1) / state.totalSteps) * 100}
+              value={Math.min(Math.max(((state.currentStep + 1) / state.totalSteps) * 100, 25), 100)}
               className="h-1"
             />
           </div>
