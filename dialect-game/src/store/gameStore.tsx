@@ -43,6 +43,19 @@ export interface GlobalGameState {
     memoryUsage: number;
     averageResponseTime: number;
   };
+  
+  // Lesson state management - NEW
+  lessonState: {
+    currentPhase: 'situation' | 'vocabulary' | 'exercises' | 'integration' | null;
+    currentStep: number;
+    phaseProgress: number;
+  };
+  
+  // Dialogue state management - NEW
+  dialogueState: {
+    currentDialogueIndex: number;
+    userTurnCompleted: boolean;
+  };
 }
 
 // Action types for the reducer
@@ -64,7 +77,11 @@ export type GameStoreAction =
   | { type: 'UPDATE_SETTINGS'; payload: Partial<GlobalGameState['settings']> }
   | { type: 'UPDATE_PERFORMANCE'; payload: Partial<GlobalGameState['performance']> }
   | { type: 'INCREMENT_GAMES_PLAYED' }
-  | { type: 'RESET_STATISTICS' };
+  | { type: 'RESET_STATISTICS' }
+  | { type: 'UPDATE_LESSON_PHASE'; payload: { phase: GlobalGameState['lessonState']['currentPhase']; step?: number } }
+  | { type: 'UPDATE_LESSON_PROGRESS'; payload: { step?: number; progress?: number } }
+  | { type: 'UPDATE_DIALOGUE_STATE'; payload: Partial<GlobalGameState['dialogueState']> }
+  | { type: 'RESET_LESSON_STATE' };
 
 // Initial state
 const initialState: GlobalGameState = {
@@ -96,6 +113,19 @@ const initialState: GlobalGameState = {
     fps: 60,
     memoryUsage: 0,
     averageResponseTime: 0,
+  },
+  
+  // Initial lesson state
+  lessonState: {
+    currentPhase: null,
+    currentStep: 0,
+    phaseProgress: 0,
+  },
+  
+  // Initial dialogue state
+  dialogueState: {
+    currentDialogueIndex: 0,
+    userTurnCompleted: false,
   },
 };
 
@@ -261,6 +291,49 @@ function gameStoreReducer(state: GlobalGameState, action: GameStoreAction): Glob
         accuracy: 0,
       };
     
+    case 'UPDATE_LESSON_PHASE':
+      return {
+        ...state,
+        lessonState: {
+          ...state.lessonState,
+          currentPhase: action.payload.phase,
+          currentStep: action.payload.step ?? state.lessonState.currentStep,
+        },
+      };
+    
+    case 'UPDATE_LESSON_PROGRESS':
+      return {
+        ...state,
+        lessonState: {
+          ...state.lessonState,
+          currentStep: action.payload.step ?? state.lessonState.currentStep,
+          phaseProgress: action.payload.progress ?? state.lessonState.phaseProgress,
+        },
+      };
+    
+    case 'UPDATE_DIALOGUE_STATE':
+      return {
+        ...state,
+        dialogueState: {
+          ...state.dialogueState,
+          ...action.payload,
+        },
+      };
+    
+    case 'RESET_LESSON_STATE':
+      return {
+        ...state,
+        lessonState: {
+          currentPhase: null,
+          currentStep: 0,
+          phaseProgress: 0,
+        },
+        dialogueState: {
+          currentDialogueIndex: 0,
+          userTurnCompleted: false,
+        },
+      };
+    
     default:
       return state;
   }
@@ -304,4 +377,13 @@ export const gameStoreActions = {
   setError: (error: string | null) => ({ type: 'SET_ERROR', payload: error } as const),
   setLoading: (loading: boolean) => ({ type: 'SET_LOADING', payload: loading } as const),
   toggleDebugMode: (debug: boolean) => ({ type: 'SET_DEBUG_MODE', payload: debug } as const),
+  
+  // Lesson state action creators
+  updateLessonPhase: (phase: GlobalGameState['lessonState']['currentPhase'], step?: number) => 
+    ({ type: 'UPDATE_LESSON_PHASE', payload: { phase, step } } as const),
+  updateLessonProgress: (step?: number, progress?: number) => 
+    ({ type: 'UPDATE_LESSON_PROGRESS', payload: { step, progress } } as const),
+  updateDialogueState: (dialogueState: Partial<GlobalGameState['dialogueState']>) => 
+    ({ type: 'UPDATE_DIALOGUE_STATE', payload: dialogueState } as const),
+  resetLessonState: () => ({ type: 'RESET_LESSON_STATE' } as const),
 };
