@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ThemeToggle } from './theme/ThemeToggleSimple';
+import { useGameLessonNavigation } from '../hooks/useGameLessonNavigation';
 
 interface SimpleStep {
   id: string;
@@ -109,8 +110,10 @@ const getSimpleLesson = (chapterNumber: number) => {
 export const GameLessonSimple: React.FC = (): JSX.Element => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { navigateToLessonComplete } = useGameLessonNavigation();
   
   const chapterNumber = parseInt(searchParams.get('chapterNumber') || '1');
+  const lessonId = searchParams.get('lessonId') || 'simple-lesson';
   const lessonData = getSimpleLesson(chapterNumber);
   
   const [state, setState] = useState<SimpleState>({
@@ -266,7 +269,13 @@ export const GameLessonSimple: React.FC = (): JSX.Element => {
       }));
     } else {
       // Leçon terminée
-      navigate(`/lesson-complete?status=success&chapterNumber=${chapterNumber}&score=${state.score}`);
+      navigateToLessonComplete({
+        status: 'success',
+        chapterNumber,
+        score: state.score,
+        lessonId,
+        type: 'simple'
+      });
     }
   }, [state.currentStep, state.totalSteps, state.score, chapterNumber, navigate]);
 

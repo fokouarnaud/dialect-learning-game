@@ -1,13 +1,11 @@
 /// <reference types="vitest" />
 import path from "path"
-
 import react from "@vitejs/plugin-react-swc"
-
 import { defineConfig, loadEnv } from 'vite'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 export default defineConfig(({ command, mode }) => {
-  // Charger les variables d'environnement
+  // Load environment variables
   const env = loadEnv(mode, process.cwd(), '')
   const isAnalyze = env.ANALYZE === 'true'
   const isEnhanced = mode === 'enhanced'
@@ -16,9 +14,7 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     plugins: [
-      react(), 
-      
-      // Analyzer de bundle conditionnel
+      react(),
       ...(isAnalyze ? [
         visualizer({
           filename: 'dist/bundle-analysis.html',
@@ -29,7 +25,6 @@ export default defineConfig(({ command, mode }) => {
       ] : []),
     ],
 
-    // Point d'entrée conditionnel
     build: {
       rollupOptions: {
         input: {
@@ -39,12 +34,8 @@ export default defineConfig(({ command, mode }) => {
           })
         },
         output: {
-          // Code splitting optimisé
           manualChunks: {
-            // Vendor libs
             vendor: ['react', 'react-dom'],
-            
-            // UI Components
             ui: [
               '@radix-ui/react-slot',
               '@radix-ui/react-progress', 
@@ -52,14 +43,8 @@ export default defineConfig(({ command, mode }) => {
               'class-variance-authority',
               'tailwind-merge'
             ],
-            
-            // Icons séparés
             icons: ['lucide-react'],
-            
-            // Utils
             utils: ['clsx'],
-            
-            // Enhanced components (mode enhanced uniquement)
             ...(isEnhanced && {
               enhanced: [
                 './src/components/ui/enhanced-button',
@@ -69,8 +54,6 @@ export default defineConfig(({ command, mode }) => {
               ]
             })
           },
-          
-          // Nommage optimisé
           chunkFileNames: (chunkInfo) => {
             const facadeModuleId = chunkInfo.facadeModuleId ? 
               chunkInfo.facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '') : 
@@ -90,12 +73,10 @@ export default defineConfig(({ command, mode }) => {
           },
         },
       },
-      
-      // Optimisations de bundle
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: command === 'build' && !isEnhanced, // Garder les logs en mode enhanced
+          drop_console: command === 'build' && !isEnhanced,
           drop_debugger: true,
           pure_funcs: ['console.debug', 'console.trace'],
         },
@@ -103,15 +84,10 @@ export default defineConfig(({ command, mode }) => {
           safari10: true,
         },
       },
-      
-      // Target moderne pour de meilleures optimisations
       target: 'esnext',
-      
-      // Source maps conditionnelles
       sourcemap: command === 'serve' || isEnhanced,
     },
 
-    // Configuration du serveur de développement
     server: {
       port: 5174,
       host: true,
@@ -121,14 +97,13 @@ export default defineConfig(({ command, mode }) => {
       },
     },
 
-    // Preview configuration
     preview: {
       port: 4173,
       host: true,
       open: isEnhanced ? '/enhanced.html' : true,
     },
 
-    // Path aliases
+    // Updated path aliases to match tsconfig.json
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -138,16 +113,21 @@ export default defineConfig(({ command, mode }) => {
         "@/utils": path.resolve(__dirname, "./src/utils"),
         "@/services": path.resolve(__dirname, "./src/services"),
         "@/hooks": path.resolve(__dirname, "./src/hooks"),
+        "@/stores": path.resolve(__dirname, "./src/stores"),
+        "@/data": path.resolve(__dirname, "./src/data"),
+        "components": path.resolve(__dirname, "./src/components"),
+        "stores": path.resolve(__dirname, "./src/stores"),
+        "data": path.resolve(__dirname, "./src/data"),
+        "lib": path.resolve(__dirname, "./src/lib"),
+        "src": path.resolve(__dirname, "./src")
       },
     },
 
-    // Optimisations CSS
     css: {
       devSourcemap: true,
       postcss: './postcss.config.js',
     },
 
-    // Optimisations des dépendances
     optimizeDeps: {
       include: [
         'react',
@@ -160,27 +140,14 @@ export default defineConfig(({ command, mode }) => {
         'clsx',
         'tailwind-merge',
       ],
-      exclude: [
-        // Exclure les packages problématiques du pre-bundling
-      ],
     },
 
-    // Variables d'environnement
     define: {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
       __ENHANCED_MODE__: JSON.stringify(isEnhanced),
     },
 
-    // Configuration spécifique à l'environnement
-    ...(isEnhanced && {
-      // Optimisations spéciales pour le mode enhanced
-      esbuild: {
-        logOverride: { 'this-is-undefined-in-esm': 'silent' }
-      }
-    }),
-
-    // Configuration Vitest
     test: {
       globals: true,
       environment: 'jsdom',
@@ -202,7 +169,6 @@ export default defineConfig(({ command, mode }) => {
             lines: 90,
             statements: 90,
           },
-          // Seuils plus élevés pour code critique
           'src/services/**': {
             branches: 95,
             functions: 95,

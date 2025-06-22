@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ThemeToggle } from './theme/ThemeToggleSimple';
+import { useGameLessonNavigation } from '../hooks/useGameLessonNavigation';
 
 // Import de nos services TDD
 import { AdvancedVoiceEngine } from '../services/voice/AdvancedVoiceEngine';
@@ -189,6 +190,7 @@ const getAdvancedLessonData = (chapterNumber: number) => {
 export const GameLessonAdvanced: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { navigateToLessonComplete } = useGameLessonNavigation();
   
   const lessonId = searchParams.get('lessonId') || '';
   const chapterNumber = parseInt(searchParams.get('chapterNumber') || '1');
@@ -528,7 +530,14 @@ export const GameLessonAdvanced: React.FC = () => {
         }));
         setWordAnalysis([]);
       } else {
-        navigate(`/lesson-complete?status=success&lessonId=${lessonId}&chapterNumber=${chapterNumber}&score=${gameState.score}&accuracy=${Math.round(gameState.lastAccuracy)}`);
+        navigateToLessonComplete({
+          status: 'success',
+          lessonId,
+          chapterNumber,
+          score: gameState.score,
+          accuracy: Math.round(gameState.lastAccuracy),
+          type: 'advanced'
+        });
       }
     } else {
       setGameState(prev => ({ ...prev, phase: 'ready', timeRemaining: 15 }));

@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ThemeToggle } from './theme/ThemeToggleSimple';
+import { useGameLessonNavigation } from '../hooks/useGameLessonNavigation';
 
 // Import services TDD
 import { AdvancedVoiceEngine } from '../services/voice/AdvancedVoiceEngine';
@@ -149,6 +150,7 @@ const getConversationData = (chapterNumber: number) => {
 export const GameLessonChatZen: React.FC = (): JSX.Element => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { navigateToLessonComplete } = useGameLessonNavigation();
   
   const chapterNumber = parseInt(searchParams.get('chapterNumber') || '1');
   const conversationData = getConversationData(chapterNumber);
@@ -476,8 +478,14 @@ export const GameLessonChatZen: React.FC = (): JSX.Element => {
   }, [chatState.currentStep, chatState.totalSteps, conversationData, addSystemMessage, addTutorMessage]);
 
   const completeLesson = useCallback(() => {
-    navigate(`/lesson-complete?status=success&chapterNumber=${chapterNumber}&score=${chatState.score}&accuracy=85`);
-  }, [navigate, chapterNumber, chatState.score]);
+    navigateToLessonComplete({ 
+      status: 'success', 
+      chapterNumber, 
+      score: chatState.score, 
+      accuracy: 85, 
+      type: 'zen' 
+    });
+  }, [navigateToLessonComplete, chapterNumber, chatState.score]);
 
   // Rendu des messages
   const renderMessage = (message: ChatMessage) => {

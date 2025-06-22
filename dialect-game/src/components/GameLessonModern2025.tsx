@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ThemeToggle } from './theme/ThemeToggleSimple';
+import { useGameLessonNavigation } from '../hooks/useGameLessonNavigation';
 
 interface GameState {
   phase: 'ready' | 'listening' | 'recording' | 'processing' | 'feedback';
@@ -104,6 +105,7 @@ const getLessonData = (chapterNumber: number) => {
 export const GameLessonModern2025: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { navigateToLessonComplete } = useGameLessonNavigation();
   
   const lessonId = searchParams.get('lessonId') || '';
   const chapterNumber = parseInt(searchParams.get('chapterNumber') || '1');
@@ -235,7 +237,14 @@ export const GameLessonModern2025: React.FC = () => {
       }));
     } else {
       // Lesson complete
-      navigate(`/lesson-complete?status=success&lessonId=${lessonId}&chapterNumber=${chapterNumber}&score=${gameState.score}&accuracy=${Math.round(gameState.lastAccuracy)}`);
+      navigateToLessonComplete({
+        status: 'success',
+        lessonId,
+        chapterNumber,
+        score: gameState.score,
+        accuracy: Math.round(gameState.lastAccuracy),
+        type: 'modern'
+      });
     }
   };
 

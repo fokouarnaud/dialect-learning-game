@@ -5,11 +5,12 @@
 
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Navigation, FixedNavigation, BreadcrumbNavigation } from './Navigation';
 import { cn } from '@/lib/utils';
+import { GameStoreProvider } from '@/stores/gameStore';
 
 // Lazy load components for better performance
 const LandingPage = lazy(() => import('./LandingPage').then(module => ({ default: module.LandingPage })));
@@ -154,7 +155,6 @@ const LessonsPageWrapper: React.FC = () => (
   </Layout>
 );
 
-
 const LessonPageWrapper: React.FC = () => (
   <Layout showNavigation={false}>
     <Suspense fallback={<LoadingSpinner message="Loading lesson..." />}>
@@ -234,7 +234,6 @@ const GameLessonEducationalWrapper: React.FC = () => (
     </Suspense>
   </Layout>
 );
-
 
 const LessonCompleteWrapper: React.FC = () => (
   <Layout showNavigation={false}>
@@ -331,63 +330,64 @@ const TestPageWrapper: React.FC<{ component: React.ComponentType; title: string 
 // Main router configuration
 export function AppRouter() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Landing page route - Gaming Version */}
-        <Route path="/" element={<LandingPageWrapper />} />
-        
-        {/* Main App Flow - Approche Pédagogique Complète */}
-        <Route path="/lessons" element={<LessonsPageWrapper />} />
-        <Route path="/lesson/:lessonId" element={<LessonPageWrapper />} />
-        <Route path="/game-lesson" element={<GameLessonEducationalWrapper />} />
-        <Route path="/game-lesson-simple" element={<GameLessonSimpleWrapper />} />
-        <Route path="/game-lesson-adaptive" element={<GameLessonAdaptiveWrapper />} />
-        <Route path="/game-lesson-situation" element={<GameLessonSituationChatWrapper />} />
-        <Route path="/game-lesson-chat" element={<GameLessonChatZenWrapper />} />
-        <Route path="/game-lesson-zen" element={<GameLessonZenWrapper />} />
-        <Route path="/game-lesson-advanced" element={<GameLessonAdvancedWrapper />} />
-        <Route path="/game-lesson-legacy" element={<GameLessonWrapper />} />
-        <Route path="/lesson-complete" element={<LessonCompleteWrapper />} />
-        <Route path="/lesson-complete-educational" element={<LessonCompleteEducationalWrapper />} />
-        <Route path="/progress" element={<ProgressPageWrapper />} />
-        
-        
-        {/* Legacy Game routes */}
-        <Route path="/game" element={<GamePageWrapper />} />
-        <Route path="/dashboard" element={<DashboardPageWrapper />} />
-        
-        {/* Phase 3 - EdClub Integration Demo */}
-        <Route
-          path="/phase3"
-          element={<TestPageWrapper component={Phase3Demo} title="Phase 3 - EdClub Integration" />}
-        />
-        <Route
-          path="/demo"
-          element={<TestPageWrapper component={Phase3Demo} title="Interactive Demo" />}
-        />
-        
-        {/* Test routes */}
-        <Route
-          path="/tailwind-test"
-          element={<TestPageWrapper component={TailwindTest} title="Tailwind CSS Test" />}
-        />
-        <Route
-          path="/components-test"
-          element={<TestPageWrapper component={TestComponents} title="shadcn/ui Components Test" />}
-        />
-        
-        {/* Redirects for legacy routes */}
-        <Route path="/home" element={<Navigate to="/" replace />} />
-        <Route path="/play" element={<Navigate to="/lessons" replace />} />
-        <Route path="/learn" element={<Navigate to="/lessons" replace />} />
-        <Route path="/stats" element={<Navigate to="/progress" replace />} />
-        <Route path="/achievements" element={<Navigate to="/progress" replace />} />
-        <Route path="/goals" element={<Navigate to="/progress" replace />} />
-        
-        {/* 404 route */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
+    <GameStoreProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Landing page route - Gaming Version */}
+          <Route path="/" element={<LandingPageWrapper />} />
+          
+          {/* Main App Flow - Approche Pédagogique Complète */}
+          <Route path="/lessons" element={<LessonsPageWrapper />} />
+          <Route path="/lesson/:lessonId" element={<LessonPageWrapper />} />
+          <Route path="/game-lesson" element={<GameLessonEducationalWrapper />} />
+          <Route path="/game-lesson-simple" element={<GameLessonSimpleWrapper />} />
+          <Route path="/game-lesson-adaptive" element={<GameLessonAdaptiveWrapper />} />
+          <Route path="/game-lesson-situation" element={<GameLessonSituationChatWrapper />} />
+          <Route path="/game-lesson-chat" element={<GameLessonChatZenWrapper />} />
+          <Route path="/game-lesson-zen" element={<GameLessonZenWrapper />} />
+          <Route path="/game-lesson-advanced" element={<GameLessonAdvancedWrapper />} />
+          <Route path="/game-lesson-legacy" element={<GameLessonWrapper />} />
+          <Route path="/lesson-complete" element={<LessonCompleteWrapper />} />
+          <Route path="/lesson-complete-educational" element={<LessonCompleteEducationalWrapper />} />
+          <Route path="/progress" element={<ProgressPageWrapper />} />
+          
+          {/* Legacy Game routes */}
+          <Route path="/game" element={<GamePageWrapper />} />
+          <Route path="/dashboard" element={<DashboardPageWrapper />} />
+          
+          {/* Phase 3 - EdClub Integration Demo */}
+          <Route
+            path="/phase3"
+            element={<TestPageWrapper component={Phase3Demo} title="Phase 3 - EdClub Integration" />}
+          />
+          <Route
+            path="/demo"
+            element={<TestPageWrapper component={Phase3Demo} title="Interactive Demo" />}
+          />
+          
+          {/* Test routes */}
+          <Route
+            path="/tailwind-test"
+            element={<TestPageWrapper component={TailwindTest} title="Tailwind CSS Test" />}
+          />
+          <Route
+            path="/components-test"
+            element={<TestPageWrapper component={TestComponents} title="shadcn/ui Components Test" />}
+          />
+          
+          {/* Redirects for legacy routes */}
+          <Route path="/home" element={<Navigate to="/" replace />} />
+          <Route path="/play" element={<Navigate to="/lessons" replace />} />
+          <Route path="/learn" element={<Navigate to="/lessons" replace />} />
+          <Route path="/stats" element={<Navigate to="/progress" replace />} />
+          <Route path="/achievements" element={<Navigate to="/progress" replace />} />
+          <Route path="/goals" element={<Navigate to="/progress" replace />} />
+          
+          {/* 404 route */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+    </GameStoreProvider>
   );
 }
 

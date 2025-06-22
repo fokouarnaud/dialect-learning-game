@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ThemeToggle } from './theme/ThemeToggleSimple';
+import { useGameLessonNavigation } from '../hooks/useGameLessonNavigation';
 
 // Import de nos services TDD
 import { AdvancedVoiceEngine } from '../services/voice/AdvancedVoiceEngine';
@@ -121,6 +122,7 @@ const getZenLessonData = (chapterNumber: number) => {
 export const GameLessonZen: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { navigateToLessonComplete } = useGameLessonNavigation();
   
   const chapterNumber = parseInt(searchParams.get('chapterNumber') || '1');
   const lessonData = getZenLessonData(chapterNumber);
@@ -324,7 +326,13 @@ export const GameLessonZen: React.FC = () => {
         encouragementMessage: ''
       }));
     } else {
-      navigate(`/lesson-complete?status=success&chapterNumber=${chapterNumber}&score=${gameState.score}&accuracy=${Math.round(gameState.lastAccuracy)}`);
+      navigateToLessonComplete({ 
+        status: 'success', 
+        chapterNumber, 
+        score: gameState.score, 
+        accuracy: Math.round(gameState.lastAccuracy), 
+        type: 'zen' 
+      });
     }
   };
 
