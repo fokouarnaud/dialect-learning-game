@@ -1,11 +1,11 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '../ui/card';
+import { Button } from '../ui/button';
 import { Mic, StopCircle, CheckCircle2, Play, ArrowRight, Trophy, Sparkles } from 'lucide-react';
-import type { LessonData } from '@/data/lessonData';
-import { useGameLessonState } from '@/hooks/useGameLessonState';
+import type { LessonData } from '../../data/lessonData';
+import { useGameLessonState } from '../../hooks/useGameLessonState';
 import { useNavigate } from 'react-router-dom';
-import { AutoScrollContainer } from '@/components/common/AutoScrollContainer';
+import { AutoScrollContainer } from '../common/AutoScrollContainer';
 import { IntegrationHeader } from './integration/IntegrationHeader';
 import { DialogueHistory } from './integration/DialogueHistory';
 import { UserTurnUI } from './integration/UserTurnUI';
@@ -312,6 +312,7 @@ export const IntegrationPhase: React.FC<IntegrationPhaseProps> = ({
                       <Button
                         onClick={handleNextDialogue}
                         size="sm"
+                        data-cta-button
                         className="bg-purple-500 hover:bg-purple-600 text-white"
                       >
                         {currentDialogueIndex < totalDialogues - 1 ? (

@@ -11,16 +11,14 @@
  * 6. Accessibilité WCAG AA + navigation clavier
  */
 
-import React, { useEffect, Suspense, useRef, useState } from 'react';
+import React, { useEffect, useState, Suspense, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
 import { Progress } from '../../ui/progress';
 import { Card, CardContent } from '../../ui/card';
-import { ConfirmDialog } from '../../ui/ConfirmDialog';
-import { ArrowLeft, BookOpen, Target, Brain, Zap } from 'lucide-react';
+import { ArrowLeft, BookOpen, Target, Brain, Zap, CheckCircle } from 'lucide-react';
 import { ThemeToggle } from '../../theme/ThemeToggleSimple';
-import { LessonProgress } from '../../navigation/LessonProgress';
 import { useGameLessonState } from '../../../hooks/useGameLessonState';
 import { useGameLessonNavigation } from '../../../hooks/useGameLessonNavigation';
 import { getLessonData } from '../../../data/lessonData';
@@ -53,8 +51,7 @@ const PHASE_CONFIG = {
   exercises: { step: 3, total: 4, icon: Brain, label: 'Pratique', weight: 0.3 },
   integration: { step: 4, total: 4, icon: Zap, label: 'Intégration', weight: 0.2 }
 };
-
-export const GameLessonEducational: React.FC = () => {
+export const GameLessonEducationalEnhanced: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { navigateToLessons } = useGameLessonNavigation();
@@ -72,9 +69,6 @@ export const GameLessonEducational: React.FC = () => {
     updatePhase,
     resetLesson 
   } = useGameLessonState();
-  
-  // État pour le dialog de confirmation moderne
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   
   // Hook optimisé de préchargement
   const {
@@ -155,26 +149,18 @@ export const GameLessonEducational: React.FC = () => {
     }
   }, [currentPhase]);
 
-  // Navigation améliorée avec dialog moderne
+  // Navigation améliorée
   const handleGoBack = () => {
-    setShowConfirmDialog(true);
-  };
-
-  // Handler pour confirmer la sortie de leçon
-  const handleConfirmExit = () => {
-    setShowConfirmDialog(false);
-    resetLesson();
-    navigateToLessons();
-  };
-
-  // Handler pour annuler la sortie
-  const handleCancelExit = () => {
-    setShowConfirmDialog(false);
+    if (window.confirm('Quitter cette leçon ? Votre progression sera perdue.')) {
+      resetLesson();
+      navigateToLessons();
+    }
   };
 
   // Configuration de la phase actuelle
   const phaseConfig = currentPhase ? PHASE_CONFIG[currentPhase] : null;
-  const globalProgress = calculateGlobalProgress();  
+  const globalProgress = calculateGlobalProgress();
+  const PhaseIcon = phaseConfig?.icon || BookOpen;  
   // **AMÉLIORATION UX 3 : Rendu des phases avec feedback moderne**
   const renderPhaseContent = () => {
     // Gestion des erreurs avec retry amélioré
@@ -252,40 +238,44 @@ export const GameLessonEducational: React.FC = () => {
       </Suspense>
     );
   };  
-  
   return (
     <div className={`min-h-screen bg-gradient-to-br ${LESSON_THEME.background}`}>
-      {/* **PHASE 2 UX OPTIMISÉE : Pagination verticale discrète** */}
-      <LessonProgress
-        currentPhase={currentPhase}
-        globalProgress={globalProgress}
-        phaseConfig={PHASE_CONFIG}
-      />
-      
-      {/* **AMÉLIORATION UX PHASE 2 : Header minimaliste immersif** */}
-      <header className="sticky top-0 z-50 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border-b border-gray-200/30 dark:border-gray-700/30">
+      {/* **AMÉLIORATION UX 5 : Header unifié et moderne** */}
+      <header className="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-10">
+          <div className="flex items-center justify-between h-16">
             
-            {/* Bouton retour essentiel */}
+            {/* Bouton retour amélioré */}
             <Button
               variant="ghost"
               size="sm"
               onClick={handleGoBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-3 py-1"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-3 py-2"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden sm:inline font-medium">Retour</span>
             </Button>
             
-            {/* Titre de leçon centré */}
-            <div className="flex-1 text-center px-4">
-              <h1 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
+            {/* **AMÉLIORATION UX 6 : Information consolidée** */}
+            <div className="flex-1 text-center px-4 max-w-lg mx-auto">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
                 {lessonData?.title || 'Premiers Contacts en Anglais'}
               </h1>
+              {phaseConfig && (
+                <div className="flex items-center justify-center gap-2 mt-1">
+                  <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r ${LESSON_THEME.accent[currentPhase]} text-white text-xs font-medium shadow-sm`}>
+                    <PhaseIcon className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{phaseConfig.label}</span>
+                    <span className="sm:hidden">{phaseConfig.step}</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs">
+                    {phaseConfig.step}/{phaseConfig.total}
+                  </Badge>
+                </div>
+              )}
             </div>
             
-            {/* Actions essentielles */}
+            {/* Actions consolidées */}
             <div className="flex items-center gap-2">
               {/* Performance badge (dev seulement) */}
               {process.env.NODE_ENV === 'development' && performanceMetrics.loadTime > 0 && (
@@ -296,14 +286,68 @@ export const GameLessonEducational: React.FC = () => {
               <ThemeToggle />
             </div>
           </div>
+          
+          {/* **AMÉLIORATION UX 7 : Barre de progression unifiée** */}
+          <div className="pb-4">
+            <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+              <span className="font-medium">
+                {phaseConfig?.label || 'Chargement...'}
+              </span>
+              <span className="font-bold text-blue-600 dark:text-blue-400">
+                {globalProgress}%
+              </span>
+            </div>
+            
+            {/* Barre de progression moderne avec gradient */}
+            <div className="relative">
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-700 ease-out"
+                  style={{ width: `${globalProgress}%` }}
+                />
+              </div>
+              
+              {/* Indicateurs de phases */}
+              <div className="flex justify-between mt-2">
+                {Object.entries(PHASE_CONFIG).map(([phase, config], index) => {
+                  const isCompleted = phaseConfig && config.step < phaseConfig.step;
+                  const isCurrent = currentPhase === phase;
+                  const PhaseIconComponent = config.icon;
+                  
+                  return (
+                    <div 
+                      key={phase}
+                      className={`flex flex-col items-center ${
+                        isCompleted ? 'text-green-600 dark:text-green-400' :
+                        isCurrent ? 'text-blue-600 dark:text-blue-400' :
+                        'text-gray-400 dark:text-gray-600'
+                      }`}
+                    >
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                        isCompleted ? 'bg-green-100 dark:bg-green-900' :
+                        isCurrent ? 'bg-blue-100 dark:bg-blue-900' :
+                        'bg-gray-100 dark:bg-gray-800'
+                      }`}>
+                        {isCompleted ? (
+                          <CheckCircle className="w-4 h-4" />
+                        ) : (
+                          <PhaseIconComponent className="w-4 h-4" />
+                        )}
+                      </div>
+                      <span className="text-xs mt-1 hidden sm:block">
+                        {config.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       </header>
       
-      {/* **PHASE 2 UX OPTIMISÉE : Contenu principal pleine largeur** */}
-      <main 
-        className="flex-1 transition-all duration-300 ease-in-out" 
-        ref={contentRef}
-      >
+      {/* **AMÉLIORATION UX 8 : Contenu principal avec référence pour auto-scroll** */}
+      <main className="flex-1" ref={contentRef}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
           <Card className="border-0 shadow-xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm">
             <CardContent className="p-0">
@@ -323,20 +367,8 @@ export const GameLessonEducational: React.FC = () => {
           <ArrowLeft className="h-5 w-5 rotate-90" />
         </Button>
       </div>
-
-      {/* **PHASE 3 UX : Dialog de confirmation moderne et accessible** */}
-      <ConfirmDialog
-        isOpen={showConfirmDialog}
-        onClose={handleCancelExit}
-        onConfirm={handleConfirmExit}
-        title="Quitter cette leçon ?"
-        description="Votre progression actuelle sera perdue et vous devrez recommencer cette leçon depuis le début."
-        confirmText="Quitter"
-        cancelText="Continuer la leçon"
-        variant="warning"
-      />
     </div>
   );
 };
 
-export default GameLessonEducational;
+export default GameLessonEducationalEnhanced;

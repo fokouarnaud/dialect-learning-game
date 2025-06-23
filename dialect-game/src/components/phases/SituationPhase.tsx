@@ -96,6 +96,7 @@ export const SituationPhase: React.FC<SituationPhaseProps> = ({ lessonData }) =>
               <Button 
                 onClick={handleNext} 
                 size="lg" 
+                data-cta-button
                 className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-semibold"
               >
                 <span className="mr-2">Commencer l'apprentissage</span>

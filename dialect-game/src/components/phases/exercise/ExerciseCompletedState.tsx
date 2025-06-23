@@ -82,6 +82,7 @@ export const ExerciseCompletedState: React.FC<ExerciseCompletedStateProps> = ({
           <Button
             onClick={onNext}
             size="sm"
+            data-cta-button
             className="bg-green-500 hover:bg-green-600 text-white"
           >
             {currentStep < totalExercises - 1 ? (

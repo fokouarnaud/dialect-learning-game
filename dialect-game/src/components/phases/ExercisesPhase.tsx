@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import type { LessonData } from '@/data/lessonData';
 import { useGameLessonState } from '@/hooks/useGameLessonState';
+import { useAutoScroll } from '@/hooks/useAutoScroll';
 import { AutoScrollContainer } from '@/components/common/AutoScrollContainer';
 import { ExerciseHeader } from './exercise/ExerciseHeader';
 import { ExerciseWordDisplay } from './exercise/ExerciseWordDisplay';
@@ -28,6 +29,9 @@ interface ExerciseState {
 export const ExercisesPhase: React.FC<ExercisesPhaseProps> = ({ lessonData }) => {
   const { currentStep, updateStep, updateProgress, updatePhase } = useGameLessonState();
   
+  // **PHASE 2 UX : Auto-scroll intelligent vers boutons CTA**
+  const { scrollToActionButton } = useAutoScroll();
+  
   const [exerciseState, setExerciseState] = useState<ExerciseState>({
     isRecording: false,
     isProcessing: false,
@@ -44,7 +48,6 @@ export const ExercisesPhase: React.FC<ExercisesPhaseProps> = ({ lessonData }) =>
   
   const currentExercise = lessonData.exercises.exercises[currentStep] || lessonData.exercises.exercises[0];
   const totalExercises = lessonData.exercises.exercises.length;
-  const progressPercentage = ((currentStep + 1) / totalExercises) * 100;
 
   // Cleanup
   useEffect(() => {
@@ -67,6 +70,17 @@ export const ExercisesPhase: React.FC<ExercisesPhaseProps> = ({ lessonData }) =>
       userAudioBlob: undefined
     }));
   }, [currentStep]);
+  
+  // **PHASE 2 UX : Auto-scroll vers boutons CTA après changement d'exercice**
+  useEffect(() => {
+    if (exerciseState.isCompleted && currentStep > 0) { 
+      const timer = setTimeout(() => {
+        scrollToActionButton('[data-cta-button]');
+      }, 500); // Délai 500ms après completion
+      
+      return () => clearTimeout(timer);
+    }
+  }, [exerciseState.isCompleted, currentStep, scrollToActionButton]);
 
   // Audio modèle
   const playModelAudio = useCallback((text: string) => {
@@ -211,7 +225,6 @@ export const ExercisesPhase: React.FC<ExercisesPhaseProps> = ({ lessonData }) =>
         currentStep={currentStep}
         totalExercises={totalExercises}
         accuracy={exerciseState.accuracy}
-        progressPercentage={progressPercentage}
       />
 
       <Card className="bg-gradient-to-br from-white to-green-50/30 dark:from-slate-800 dark:to-green-900/10 border-0 shadow-xl overflow-hidden">

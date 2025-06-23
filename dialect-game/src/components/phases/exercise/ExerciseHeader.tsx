@@ -1,20 +1,17 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Target } from 'lucide-react';
 
 interface ExerciseHeaderProps {
   currentStep: number;
   totalExercises: number;
   accuracy: number;
-  progressPercentage: number;
 }
 
 export const ExerciseHeader: React.FC<ExerciseHeaderProps> = ({
   currentStep,
   totalExercises,
-  accuracy,
-  progressPercentage
+  accuracy
 }) => {
   return (
     <div className="text-center mb-6">
@@ -41,8 +38,6 @@ export const ExerciseHeader: React.FC<ExerciseHeaderProps> = ({
           </Badge>
         )}
       </div>
-      
-      <Progress value={progressPercentage} className="h-2 max-w-xs mx-auto" />
     </div>
   );
 };
