@@ -5,12 +5,12 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Card, CardContent } from './ui/card';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
+import { Card, CardContent } from '../../ui/card';
 import { cn } from '@/lib/utils';
-import useNavigation from '../hooks/useNavigation';
-import { ThemeToggle } from './theme/ThemeToggleSimple';
+import useNavigation from '../../../hooks/useNavigation';
+import { ThemeToggle } from '../../theme/ThemeToggleSimple';
 
 interface NavigationProps {
   showBackButton?: boolean;

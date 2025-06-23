@@ -4,10 +4,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Progress } from '../ui/progress';
 import {
   ArrowLeft,
   Play,
@@ -25,9 +25,9 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import type { Lesson } from './LessonSelector';
-import NavigationGuard from './NavigationGuard';
-import { ThemeToggle } from './theme/ThemeToggleSimple';
+import type { Lesson } from '../LessonSelector';
+import NavigationGuard from '../NavigationGuard';
+import { ThemeToggle } from '../theme/ThemeToggleSimple';
 
 
 interface Chapter {

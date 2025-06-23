@@ -8,30 +8,31 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Navigation, FixedNavigation, BreadcrumbNavigation } from './Navigation';
+import { Navigation, FixedNavigation, BreadcrumbNavigation } from './core/navigation/Navigation';
 import { cn } from '@/lib/utils';
 import { GameStoreProvider } from '@/stores/gameStore';
 
-// Lazy load components for better performance
+// Lazy load components for better performance - New Architecture
 const LandingPage = lazy(() => import('./LandingPage').then(module => ({ default: module.LandingPage })));
-const LandingPageGaming = lazy(() => import('./LandingPageGaming'));
-const LessonsPageClean = lazy(() => import('./LessonsPageClean'));
+const LandingPageGaming = lazy(() => import('./core/LandingPageGaming'));
+const LessonsPageClean = lazy(() => import('./core/LessonsPageClean'));
 const LessonPage = lazy(() => import('./LessonPage'));
-const GameLessonModern2025 = lazy(() => import('./GameLessonModern2025'));
-const GameLessonAdvanced = lazy(() => import('./GameLessonAdvanced'));
-const GameLessonZen = lazy(() => import('./GameLessonZen'));
-const GameLessonChatZen = lazy(() => import('./GameLessonChatZen'));
+const GameLessonModern2025 = lazy(() => import('./archive/legacy-lessons/GameLessonModern2025'));
+const GameLessonAdvanced = lazy(() => import('./archive/legacy-lessons/GameLessonAdvanced'));
+const GameLessonZen = lazy(() => import('./archive/legacy-lessons/GameLessonZen'));
+const GameLessonChatZen = lazy(() => import('./archive/legacy-lessons/GameLessonChatZen'));
 const GameLessonSituationChat = lazy(() => import('./GameLessonSituationChat'));
 const GameLessonAdaptive = lazy(() => import('./GameLessonAdaptive'));
 const GameLessonSimple = lazy(() => import('./GameLessonSimple'));
-const GameLessonEducational = lazy(() => import('./GameLessonEducational'));
+const GameLessonEducational = lazy(() => import('./core/lesson/GameLessonEducational'));
 const LessonCompleteInterface = lazy(() => import('./LessonCompleteInterface'));
-const LessonCompletePageEducational = lazy(() => import('./LessonCompletePageEducational'));
+const LessonCompletePageEducational = lazy(() => import('./core/lesson/LessonCompletePageEducational'));
 const ProgressPage = lazy(() => import('./ProgressPage'));
 const GameDashboard = lazy(() => import('./game/GameDashboard').then(module => ({ default: module.GameDashboard })));
 const TailwindTest = lazy(() => import('./TailwindTest'));
 const TestComponents = lazy(() => import('./TestComponents'));
 const Phase3Demo = lazy(() => import('./Phase3Demo'));
+const ThemeValidator = lazy(() => import('./common/ThemeValidator').then(module => ({ default: module.ThemeValidator })));
 
 // Loading component with enhanced UX
 const LoadingSpinner: React.FC<{ message?: string }> = ({ message = "Loading..." }) => (
@@ -366,6 +367,10 @@ export function AppRouter() {
           />
           
           {/* Test routes */}
+          <Route
+            path="/theme-validator"
+            element={<TestPageWrapper component={ThemeValidator} title="Theme Validator" />}
+          />
           <Route
             path="/tailwind-test"
             element={<TestPageWrapper component={TailwindTest} title="Tailwind CSS Test" />}
