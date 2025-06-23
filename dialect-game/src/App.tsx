@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useCallback, useEffect, useReducer, Suspense } from 'react';
-import { ThemeProvider, DarkModeToggle, ThemeSelector } from './components/ThemeProvider';
+import { ThemeProvider } from './components/theme/ThemeProvider';
+import { ThemeToggle } from './components/theme/ThemeToggleSimple';
 import { GameCanvas } from './components/GameCanvas';
 import { ScoreDisplay } from './components/ScoreDisplay';
 import { VoiceInput } from './components/VoiceInput';
@@ -24,11 +25,12 @@ interface GameStateType {
   error: string | null;
 }
 
-type GameAction = 
+type GameAction =
   | { type: 'START_GAME' }
   | { type: 'END_GAME' }
   | { type: 'PAUSE_GAME' }
   | { type: 'RESUME_GAME' }
+  | { type: 'BACK_TO_MENU' }
   | { type: 'UPDATE_SCORE'; payload: number }
   | { type: 'VOICE_RESULT'; payload: { correct: boolean; confidence: number } }
   | { type: 'RESET_STREAK' }
@@ -81,6 +83,13 @@ function gameStateReducer(state: GameStateType, action: GameAction): GameStateTy
     
     case 'RESUME_GAME':
       return { ...state, gameState: 'playing' };
+    
+    case 'BACK_TO_MENU':
+      return {
+        ...state,
+        gameState: 'menu',
+        error: null,
+      };
     
     case 'UPDATE_SCORE': {
       const newScore = state.score + action.payload;
@@ -318,8 +327,7 @@ export function App() {
   }, []);
 
   const handleBackToMenu = useCallback(() => {
-    dispatch({ type: 'START_GAME' });
-    setTimeout(() => dispatch({ type: 'END_GAME' }), 100);
+    dispatch({ type: 'BACK_TO_MENU' });
   }, []);
 
   const handleRestart = useCallback(() => {
@@ -341,8 +349,7 @@ export function App() {
           <header className="app-header p-4 flex justify-between items-center glass-container mx-4 mt-4 rounded-xl">
             <h1 className="text-gradient text-3xl font-display font-bold">Dialect Learning Game</h1>
             <div className="flex items-center gap-4">
-              <ThemeSelector className="w-32" />
-              <DarkModeToggle />
+              <ThemeToggle />
               {debugMode && (
                 <div className="debug-info badge badge-primary" data-testid="debug-info">
                   <span>FPS: {fps}</span>

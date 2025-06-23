@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 
 // Types pour l'intégration
 interface VoiceState {

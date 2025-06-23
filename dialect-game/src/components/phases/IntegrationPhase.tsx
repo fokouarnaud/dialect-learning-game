@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
-import { Card, CardContent } from '../ui/card';
-import { Button } from '../ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Mic, StopCircle, CheckCircle2, Play, ArrowRight, Trophy, Sparkles } from 'lucide-react';
 import type { LessonData } from '../../data/lessonData';
 import { useGameLessonState } from '../../hooks/useGameLessonState';
@@ -46,12 +46,27 @@ export const IntegrationPhase: React.FC<IntegrationPhaseProps> = ({
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   
-  const currentDialogueIndex = dialogueState.currentDialogueIndex || 0;
+  const currentDialogueIndex = dialogueState.currentDialogueIndex ?? 0;
   const currentDialogue = lessonData.integration.dialogue[currentDialogueIndex];
   const totalDialogues = lessonData.integration.dialogue.length;
   const progressPercentage = ((currentDialogueIndex + 1) / totalDialogues) * 100;
 
-  // Cleanup
+  // Cleanup et reset de l'état local quand l'index de dialogue change
+  useEffect(() => {
+    // Reset de l'état local à chaque changement de dialogue
+    if (!dialogueState.userTurnCompleted) {
+      setDialogState({
+        isRecording: false,
+        isProcessing: false,
+        isCompleted: false,
+        timeRemaining: 10,
+        message: '',
+        userAudioBlob: undefined,
+      });
+    }
+  }, [currentDialogueIndex, dialogueState.userTurnCompleted]);
+
+  // Cleanup général
   useEffect(() => {
     return () => {
       if (countdownRef.current) clearInterval(countdownRef.current);
@@ -142,7 +157,7 @@ export const IntegrationPhase: React.FC<IntegrationPhaseProps> = ({
       countdownRef.current = null;
     }
     
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.stop();
     }
     
@@ -168,7 +183,8 @@ export const IntegrationPhase: React.FC<IntegrationPhaseProps> = ({
         message
       }));
 
-      updateDialogue({ ...dialogueState, userTurnCompleted: true });
+      // ✅ Correction : mise à jour plus simple et fiable
+      updateDialogue({ userTurnCompleted: true });
 
     } catch (error) {
       console.error('Erreur traitement:', error);
@@ -184,14 +200,33 @@ export const IntegrationPhase: React.FC<IntegrationPhaseProps> = ({
   const handleNextDialogue = useCallback(() => {
     if (currentDialogueIndex < totalDialogues - 1) {
       const nextIndex = currentDialogueIndex + 1;
-      updateDialogue({ currentDialogueIndex: nextIndex, userTurnCompleted: false });
+      
+      // Mise à jour de l'état global
+      updateDialogue({
+        currentDialogueIndex: nextIndex,
+        userTurnCompleted: false
+      });
+      
+      // Réinitialisation complète de l'état local
       setDialogState({
         isRecording: false,
         isProcessing: false,
         isCompleted: false,
         timeRemaining: 10,
         message: '',
+        userAudioBlob: undefined, // ✅ Reset de l'audio
       });
+      
+      // Nettoyage des refs
+      audioChunksRef.current = [];
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current = null;
+      }
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+        countdownRef.current = null;
+      }
+      
     } else {
       navigate(`/lesson-complete-educational?status=success&chapterNumber=${chapterNumber}&score=95&lessonId=${lessonId}&type=integration`);
     }
@@ -223,7 +258,7 @@ export const IntegrationPhase: React.FC<IntegrationPhaseProps> = ({
             className="space-y-4"
           >
             {/* Tour de l'utilisateur */}
-            {currentDialogue.speaker === 'user' && (
+            {currentDialogue.speaker === 'user' && !dialogueState.userTurnCompleted && (
               <div className="space-y-4">
                 
                 {/* État initial */}

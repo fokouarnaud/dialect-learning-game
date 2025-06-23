@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { 
   ArrowLeft, 
   Download, 
@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProgressTracker from './ProgressTracker';
-import { BreadcrumbNavigation } from './Navigation';
+import { BreadcrumbNavigation } from './core/navigation/Navigation';
 
 export const ProgressPage: React.FC = () => {
   const navigate = useNavigate();

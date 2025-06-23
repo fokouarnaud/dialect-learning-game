@@ -13,10 +13,10 @@
 
 import React, { useEffect, useState, Suspense, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Badge } from '../../ui/badge';
-import { Button } from '../../ui/button';
-import { Progress } from '../../ui/progress';
-import { Card, CardContent } from '../../ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, BookOpen, Target, Brain, Zap, CheckCircle } from 'lucide-react';
 import { ThemeToggle } from '../../theme/ThemeToggleSimple';
 import { useGameLessonState } from '../../../hooks/useGameLessonState';

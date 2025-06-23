@@ -5,10 +5,10 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from './ui/button';
-import { Progress } from './ui/progress';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
-import { Badge } from './ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { 
   ChevronLeft, 
   ChevronRight, 

@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { 
   Trophy,
   Star,
@@ -20,7 +20,7 @@ import {
   Heart
 } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ThemeToggle } from './theme/ThemeToggleSimple';
+import { ThemeToggle } from '../../theme/ThemeToggleSimple';
 
 export const LessonCompletePageEducational: React.FC = () => {
   const navigate = useNavigate();

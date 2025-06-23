@@ -17,10 +17,11 @@ const LandingPage = lazy(() => import('./LandingPage').then(module => ({ default
 const LandingPageGaming = lazy(() => import('./core/LandingPageGaming'));
 const LessonsPageClean = lazy(() => import('./core/LessonsPageClean'));
 const LessonPage = lazy(() => import('./LessonPage'));
-const GameLessonModern2025 = lazy(() => import('./archive/legacy-lessons/GameLessonModern2025'));
-const GameLessonAdvanced = lazy(() => import('./archive/legacy-lessons/GameLessonAdvanced'));
-const GameLessonZen = lazy(() => import('./archive/legacy-lessons/GameLessonZen'));
-const GameLessonChatZen = lazy(() => import('./archive/legacy-lessons/GameLessonChatZen'));
+// Legacy components temporarily disabled
+// const GameLessonModern2025 = lazy(() => import('./archive/legacy-lessons/GameLessonModern2025'));
+// const GameLessonAdvanced = lazy(() => import('./archive/legacy-lessons/GameLessonAdvanced'));
+// const GameLessonZen = lazy(() => import('./archive/legacy-lessons/GameLessonZen'));
+// const GameLessonChatZen = lazy(() => import('./archive/legacy-lessons/GameLessonChatZen'));
 const GameLessonSituationChat = lazy(() => import('./GameLessonSituationChat'));
 const GameLessonAdaptive = lazy(() => import('./GameLessonAdaptive'));
 const GameLessonSimple = lazy(() => import('./GameLessonSimple'));
@@ -172,37 +173,38 @@ const ProgressPageWrapper: React.FC = () => (
   </Layout>
 );
 
-const GameLessonWrapper: React.FC = () => (
-  <Layout showNavigation={false}>
-    <Suspense fallback={<LoadingSpinner message="Loading game..." />}>
-      <GameLessonModern2025 />
-    </Suspense>
-  </Layout>
-);
+// Legacy wrappers temporarily disabled
+// const GameLessonWrapper: React.FC = () => (
+//   <Layout showNavigation={false}>
+//     <Suspense fallback={<LoadingSpinner message="Loading game..." />}>
+//       <GameLessonModern2025 />
+//     </Suspense>
+//   </Layout>
+// );
 
-const GameLessonAdvancedWrapper: React.FC = () => (
-  <Layout showNavigation={false}>
-    <Suspense fallback={<LoadingSpinner message="Loading advanced lesson..." />}>
-      <GameLessonAdvanced />
-    </Suspense>
-  </Layout>
-);
+// const GameLessonAdvancedWrapper: React.FC = () => (
+//   <Layout showNavigation={false}>
+//     <Suspense fallback={<LoadingSpinner message="Loading advanced lesson..." />}>
+//       <GameLessonAdvanced />
+//     </Suspense>
+//   </Layout>
+// );
 
-const GameLessonZenWrapper: React.FC = () => (
-  <Layout showNavigation={false}>
-    <Suspense fallback={<LoadingSpinner message="Preparing your zen learning experience..." />}>
-      <GameLessonZen />
-    </Suspense>
-  </Layout>
-);
+// const GameLessonZenWrapper: React.FC = () => (
+//   <Layout showNavigation={false}>
+//     <Suspense fallback={<LoadingSpinner message="Preparing your zen learning experience..." />}>
+//       <GameLessonZen />
+//     </Suspense>
+//   </Layout>
+// );
 
-const GameLessonChatZenWrapper: React.FC = () => (
-  <Layout showNavigation={false}>
-    <Suspense fallback={<LoadingSpinner message="Starting your conversation with Emma..." />}>
-      <GameLessonChatZen />
-    </Suspense>
-  </Layout>
-);
+// const GameLessonChatZenWrapper: React.FC = () => (
+//   <Layout showNavigation={false}>
+//     <Suspense fallback={<LoadingSpinner message="Starting your conversation with Emma..." />}>
+//       <GameLessonChatZen />
+//     </Suspense>
+//   </Layout>
+// );
 
 const GameLessonSituationChatWrapper: React.FC = () => (
   <Layout showNavigation={false}>
@@ -344,10 +346,11 @@ export function AppRouter() {
           <Route path="/game-lesson-simple" element={<GameLessonSimpleWrapper />} />
           <Route path="/game-lesson-adaptive" element={<GameLessonAdaptiveWrapper />} />
           <Route path="/game-lesson-situation" element={<GameLessonSituationChatWrapper />} />
-          <Route path="/game-lesson-chat" element={<GameLessonChatZenWrapper />} />
+          {/* Legacy routes temporarily disabled */}
+          {/* <Route path="/game-lesson-chat" element={<GameLessonChatZenWrapper />} />
           <Route path="/game-lesson-zen" element={<GameLessonZenWrapper />} />
           <Route path="/game-lesson-advanced" element={<GameLessonAdvancedWrapper />} />
-          <Route path="/game-lesson-legacy" element={<GameLessonWrapper />} />
+          <Route path="/game-lesson-legacy" element={<GameLessonWrapper />} /> */}
           <Route path="/lesson-complete" element={<LessonCompleteWrapper />} />
           <Route path="/lesson-complete-educational" element={<LessonCompleteEducationalWrapper />} />
           <Route path="/progress" element={<ProgressPageWrapper />} />

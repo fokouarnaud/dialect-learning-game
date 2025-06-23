@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 import UserProgression from './UserProgression'
 import MultiplayerLobby from './MultiplayerLobby'
 import GameVoiceIntegration from './GameVoiceIntegration'

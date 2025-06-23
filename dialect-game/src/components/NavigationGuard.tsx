@@ -5,11 +5,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button } from './ui/button';
-import { Alert, AlertDescription } from './ui/alert';
-import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { 
   AlertTriangle, 
   ChevronRight, 

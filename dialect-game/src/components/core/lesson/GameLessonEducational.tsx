@@ -13,17 +13,17 @@
 
 import React, { useEffect, Suspense, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Badge } from '../../ui/badge';
-import { Button } from '../../ui/button';
-import { Progress } from '../../ui/progress';
-import { Card, CardContent } from '../../ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmDialog } from '../../ui/ConfirmDialog';
 import { ArrowLeft, BookOpen, Target, Brain, Zap } from 'lucide-react';
 import { ThemeToggle } from '../../theme/ThemeToggleSimple';
 import { LessonProgress } from '../../navigation/LessonProgress';
 import { useGameLessonState } from '../../../hooks/useGameLessonState';
 import { useGameLessonNavigation } from '../../../hooks/useGameLessonNavigation';
-import { getLessonData } from '../../../data/lessonData';
+import { getLessonData, type LessonData } from '../../../data/lessonData';
 import { LessonSkeleton } from '../../common/LoadingSkeleton';
 import usePreloadData from '../../../hooks/usePreloadData';
 import { SituationPhase } from '../../phases/SituationPhase';
@@ -76,14 +76,14 @@ export const GameLessonEducational: React.FC = () => {
   // État pour le dialog de confirmation moderne
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   
-  // Hook optimisé de préchargement
+  // Hook optimisé de préchargement avec typage correct
   const {
     data: lessonData,
     isLoading,
     error: lessonError,
     preloadData,
     performanceMetrics
-  } = usePreloadData({
+  } = usePreloadData<LessonData>({
     cacheKey: `lesson-${lessonId}-${chapterNumber}`,
     ttl: 30 * 60 * 1000, // 30 minutes
     retryAttempts: 2,
@@ -92,8 +92,8 @@ export const GameLessonEducational: React.FC = () => {
     fallbackData: null
   });
 
-  // Fonction fetcher optimisée
-  const fetchLessonData = async () => {
+  // Fonction fetcher optimisée avec typage correct
+  const fetchLessonData = async (): Promise<LessonData> => {
     console.log(`[Enhanced] Loading lesson: ${lessonId}`);
     await new Promise(resolve => setTimeout(resolve, 50)); // Délai réaliste
     return getLessonData();

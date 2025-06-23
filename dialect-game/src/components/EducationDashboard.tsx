@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { EnhancedCard, EnhancedCardHeader, EnhancedCardContent, EnhancedCardTitle, EnhancedCardDescription, EnhancedCardFooter } from './ui/enhanced-card';
-import { EnhancedButton } from './ui/enhanced-button';
+import { EnhancedButton } from '@/components/ui/enhanced-button';
 import { createToastHelpers, useToast } from './ui/toast';
 import type { 
   Lesson, 

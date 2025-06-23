@@ -9,7 +9,7 @@ export interface PreloadDataOptions<T = any> {
   retryAttempts?: number;
   retryDelay?: number;
   enablePerformanceTracking?: boolean;
-  fallbackData?: T;
+  fallbackData?: T | null;
 }
 
 export interface UsePreloadDataReturn<T = any> {
@@ -46,10 +46,10 @@ export const usePreloadData = <T = any>(options: PreloadDataOptions<T>): UsePrel
     retryAttempts = 3,
     retryDelay = 100,
     enablePerformanceTracking = true,
-    fallbackData = null
+    fallbackData = null as T | null
   } = options;
   
-  const [data, setData] = useState<T | null>(fallbackData);
+  const [data, setData] = useState<T | null>(fallbackData as T | null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -167,7 +167,7 @@ export const usePreloadData = <T = any>(options: PreloadDataOptions<T>): UsePrel
   
   const clearCache = useCallback((): void => {
     localStorage.removeItem(getFullKey(cacheKey));
-    setData(fallbackData);
+    setData(fallbackData as T | null);
     setLastUpdated(null);
     setIsCached(false);
     setError(null);

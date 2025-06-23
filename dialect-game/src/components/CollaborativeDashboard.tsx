@@ -4,8 +4,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { EnhancedCard, EnhancedCardHeader, EnhancedCardContent, EnhancedCardTitle, EnhancedCardDescription } from './ui/enhanced-card';
-import { EnhancedButton } from './ui/enhanced-button';
+import { EnhancedCard, EnhancedCardHeader, EnhancedCardContent, EnhancedCardTitle, EnhancedCardDescription } from '@/components/ui/enhanced-card';
+import { EnhancedButton } from '@/components/ui/enhanced-button';
 import { createToastHelpers, useToast } from './ui/toast';
 import type { 
   VirtualClassroom,

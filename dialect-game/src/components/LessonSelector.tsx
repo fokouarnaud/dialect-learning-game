@@ -5,12 +5,12 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Progress } from './ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CheckCircle, Clock, Lock, Search, Star, Trophy, Zap } from 'lucide-react';
 
 // Types for lesson data

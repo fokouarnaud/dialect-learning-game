@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Card, CardContent } from 'components/ui/card';
-import { Button } from 'components/ui/button';
-import { Badge } from 'components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ArrowRight, BookOpen, Volume2 } from 'lucide-react';
 import type { LessonData } from 'data/lessonData';
 import { useGameLessonState } from '../../hooks/useGameLessonState';

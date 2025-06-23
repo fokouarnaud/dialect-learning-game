@@ -6,7 +6,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useGameEngine } from '../hooks/useGameEngine';
 import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 import type { GameState, GameEvent } from '../types';
