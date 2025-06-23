@@ -6,7 +6,7 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Navigation, FixedNavigation, BreadcrumbNavigation } from './core/navigation/Navigation';
 import { cn } from '@/lib/utils';
